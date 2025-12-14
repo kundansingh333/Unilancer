@@ -133,57 +133,57 @@ exports.createEvent = async (req, res) => {
 // };
 
 // // ========== 3. GET SINGLE EVENT ==========
-// exports.getEventById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
+exports.getEventById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     const event = await Event.findById(id)
-//       .populate(
-//         "organizedBy",
-//         "name email role profilePicture company jobTitle"
-//       )
-//       .populate(
-//         "registeredUsers.userId",
-//         "name email branch year rollNumber profilePicture"
-//       );
+    const event = await Event.findById(id)
+      .populate(
+        "organizedBy",
+        "name email role profilePicture company jobTitle"
+      )
+      .populate(
+        "registeredUsers.userId",
+        "name email branch year rollNumber profilePicture"
+      );
 
-//     if (!event) {
-//       return res.status(404).json({
-//         success: false,
-//         error: "Event not found",
-//       });
-//     }
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        error: "Event not found",
+      });
+    }
 
-//     // Increment view count (but not for organizer)
-//     if (req.userId && event.organizedBy._id.toString() !== req.userId) {
-//       await event.incrementViews();
-//     }
+    // Increment view count (but not for organizer)
+    if (req.userId && event.organizedBy._id.toString() !== req.userId) {
+      await event.incrementViews();
+    }
 
-//     // Check user status
-//     const userStatus = req.userId
-//       ? {
-//           isRegistered: event.isUserRegistered(req.userId),
-//           registration: event.getUserRegistration(req.userId),
-//         }
-//       : null;
+    // Check user status
+    const userStatus = req.userId
+      ? {
+          isRegistered: event.isUserRegistered(req.userId),
+          registration: event.getUserRegistration(req.userId),
+        }
+      : null;
 
-//     res.json({
-//       success: true,
-//       event,
-//       userStatus,
-//       registrationOpen: event.isRegistrationOpen(),
-//     });
-//   } catch (err) {
-//     console.error("Get event error:", err);
-//     res.status(500).json({
-//       success: false,
-//       error: "Failed to fetch event",
-//     });
-//   }
-// };
+    res.json({
+      success: true,
+      event,
+      userStatus,
+      registrationOpen: event.isRegistrationOpen(),
+    });
+  } catch (err) {
+    console.error("Get event error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch event",
+    });
+  }
+};
 
 // controllers/eventController.js
-const Event = require("../models/Event");
+// const Event = require("../models/Event");
 
 exports.getAllEvents = async (req, res) => {
   try {

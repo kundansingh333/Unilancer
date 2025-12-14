@@ -140,41 +140,75 @@
 // backend/routes/events.js
 
 // backend/routes/events.js
+// const express = require("express");
+// const router = express.Router();
+// const eventController = require("../controllers/eventController");
+// const auth = require("../middleware/auth");
+
+// /* ================= PUBLIC ================= */
+
+// // Featured MUST be before :id
+// router.get("/featured", eventController.getFeaturedEvents);
+
+// // My routes MUST be before :id
+// router.get("/my/organized", auth, eventController.getMyEvents);
+// router.get("/my/registered", auth, eventController.getMyRegistrations);
+
+// // All events
+// router.get("/", eventController.getAllEvents);
+
+// /* ================= EVENT REGISTRATION ================= */
+
+// router.post("/:id/register", auth, eventController.registerForEvent);
+// router.delete("/:id/register", auth, eventController.unregisterFromEvent);
+
+// /* ================= EVENT MANAGEMENT ================= */
+
+// router.post("/create", auth, eventController.createEvent);
+// router.put("/:id/edit", auth, eventController.updateEvent);
+// router.delete("/:id", auth, eventController.deleteEvent);
+
+// /* ================= REGISTRATIONS (VERY IMPORTANT) ================= */
+
+// router.get("/:id/registrations", auth, eventController.getEventRegistrations);
+// router.put("/:id/attendance/:userId", auth, eventController.markAttendance);
+
+// /* ================= SINGLE EVENT (MUST BE LAST) ================= */
+
+// router.get("/:id", eventController.getEventById);
+
+// module.exports = router;
+
 const express = require("express");
 const router = express.Router();
 const eventController = require("../controllers/eventController");
 const auth = require("../middleware/auth");
 
-/* ================= PUBLIC ================= */
+/* ================= STATIC ROUTES (MUST BE FIRST) ================= */
 
-// Featured MUST be before :id
+// 1. GET Requests (Static)
 router.get("/featured", eventController.getFeaturedEvents);
-
-// My routes MUST be before :id
 router.get("/my/organized", auth, eventController.getMyEvents);
 router.get("/my/registered", auth, eventController.getMyRegistrations);
-
-// All events
 router.get("/", eventController.getAllEvents);
 
-/* ================= EVENT REGISTRATION ================= */
+// 2. POST Requests (Static)
+// Moved this UP so it's safely away from any /:id logic
+router.post("/create", auth, eventController.createEvent);
 
+/* ================= DYNAMIC ROUTES (/:id) ================= */
+
+// 3. Event Registration (Specific /:id actions)
 router.post("/:id/register", auth, eventController.registerForEvent);
 router.delete("/:id/register", auth, eventController.unregisterFromEvent);
 
-/* ================= EVENT MANAGEMENT ================= */
-
-router.post("/create", auth, eventController.createEvent);
-router.put("/:id/edit", auth, eventController.updateEvent);
-router.delete("/:id", auth, eventController.deleteEvent);
-
-/* ================= REGISTRATIONS (VERY IMPORTANT) ================= */
-
+// 4. Specific Management & Data
 router.get("/:id/registrations", auth, eventController.getEventRegistrations);
 router.put("/:id/attendance/:userId", auth, eventController.markAttendance);
+router.put("/:id/edit", auth, eventController.updateEvent);
 
-/* ================= SINGLE EVENT (MUST BE LAST) ================= */
-
+// 5. Generic /:id operations (MUST BE LAST)
+router.delete("/:id", auth, eventController.deleteEvent);
 router.get("/:id", eventController.getEventById);
 
 module.exports = router;

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import { toast } from "react-hot-toast";
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,7 @@ const ResetPasswordPage = () => {
 
   useEffect(() => {
     if (!token) {
+      toast.error("Invalid or missing reset token.");
       setLocalError("Invalid or missing reset token.");
     }
   }, [token]);

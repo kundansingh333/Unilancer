@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import { toast } from "react-hot-toast";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ const ForgotPasswordPage = () => {
 
     const result = await forgotPassword(email);
     if (result.success) {
+      toast.success("Password reset link sent to your email.");
       setSuccessMsg(result.message);
     }
   };

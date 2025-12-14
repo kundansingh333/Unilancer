@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import { toast } from "react-hot-toast";
 
 const ROLES = ["student", "alumni", "faculty"];
 
@@ -82,6 +83,7 @@ const RegisterPage = () => {
 
     if (result?.success) {
       // ⬇️ as you said: go to OTP screen instead of login
+      toast.success("Account created successfully. Verify your email.");
       navigate("/verify-otp", { state: { email: form.email } });
     }
   };

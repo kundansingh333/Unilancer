@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import api from "../../api/client";
+import {toast} from "react-hot-toast";
+
 
 const VerifyOtpPage = () => {
   const location = useLocation();
@@ -25,6 +27,7 @@ const VerifyOtpPage = () => {
     setError("");
     setInfo("");
     if (!email || !otp || otp.length !== 6) {
+      toast.error("Please enter your email and a 6-digit code.");
       setError("Please enter your email and a 6-digit code.");
       return;
     }
@@ -35,7 +38,7 @@ const VerifyOtpPage = () => {
         email,
         otp,
       });
-
+      toast.success("Email verified successfully!");
       setInfo(res.data?.message || "Email verified successfully!");
       // After success, go to login
       setTimeout(() => {
@@ -56,6 +59,7 @@ const VerifyOtpPage = () => {
     setError("");
     setInfo("");
     if (!email) {
+
       setError("Please enter your registered email first.");
       return;
     }
