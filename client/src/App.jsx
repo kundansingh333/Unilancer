@@ -31,6 +31,16 @@ import AdminEventApprovalPage from "./pages/events/AdminEventApprovalPage";
 import EventAttendancePage from "./pages/events/EventAttendancePage";
 import { Toaster } from "react-hot-toast";
 import EventRegistrationsPage from "./pages/events/EventRegistrationsPage";
+import AdminJobApprovalPage from "./pages/admin/AdminJobApprovalPage";
+import BookmarkedJobsPage from "./pages/jobs/BookmarkedJobsPage";
+import JobApplicantsPage from "./pages/jobs/JobApplicantsPage";
+import JobListPage from "./pages/jobs/JobListPage";
+import CreateJobPage from "./pages/jobs/CreateJobPage";
+import JobDetailPage from "./pages/jobs/JobDetailPage";
+import EditJobPage from "./pages/jobs/EditJobPage";
+import MyPostedJobsPage from "./pages/jobs/MyPostedJobsPage";
+import MyApplicationsPage from "./pages/jobs/MyApplicationsPage";
+import ApplyJob from "./pages/jobs/ApplyJob";
 // import OrganizedEventsPage from "./pages/events/OrganizedEventsPage";
 // import RegisteredEventsPage from "./pages/events/RegisteredEventsPage";
 
@@ -161,6 +171,87 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <EventRegistrationsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* JOB APPLICANTS + BOOKMARKS */}
+          <Route path="/jobs" element={<JobListPage />} />
+          <Route path="/jobs/:id" element={<JobDetailPage />} />
+          <Route
+            path="/jobs/create"
+            element={
+              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+                <CreateJobPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/jobs/my/posted"
+            element={
+              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+                <MyPostedJobsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/jobs/:id/edit"
+            element={
+              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+                <EditJobPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/jobs/my/applications"
+            element={
+              <ProtectedRoute allowedRoles={["student", "alumni"]}>
+                <MyApplicationsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/jobs/:id/applicants"
+            element={
+              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+                <JobApplicantsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs/my/bookmarks"
+            element={
+              <ProtectedRoute>
+                <BookmarkedJobsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/jobs/my/posted"
+            element={
+              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+                <MyPostedJobsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/jobs/approvals"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminJobApprovalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs/:jobId/apply"
+            element={
+              <ProtectedRoute allowedRoles={["student", "alumni"]}>
+                <ApplyJob />
               </ProtectedRoute>
             }
           />

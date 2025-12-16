@@ -44,6 +44,9 @@ const Navbar = () => {
           <Link to="/events" className={isActive("/events")}>
             Events
           </Link>
+          <Link to="/jobs" className={isActive("/jobs")}>
+            Jobs
+          </Link>
 
           {/* ✅ Create Event (ONLY for faculty & admin) */}
           {user && (user.role === "faculty" || user.role === "admin") && (
@@ -55,6 +58,10 @@ const Navbar = () => {
             </Link>
           )}
         </div>
+
+        <Link to="/jobs/create" className="text-slate-200 hover:text-blue-400">
+          Create Jobs
+        </Link>
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">

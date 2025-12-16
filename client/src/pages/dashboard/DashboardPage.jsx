@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import OrderStatsBox from "../orders/OrderStatsBox.jsx";
 import useOrderStore from "../../store/orderStore";
+import MyPostedJobsPage from "../jobs/MyPostedJobsPage.jsx";
 
 const roleColors = {
   student: "bg-emerald-500/10 text-emerald-300 border-emerald-500/40",
@@ -337,6 +338,23 @@ const QuickActions = ({ user, navigate }) => {
             View upcoming events
           </button>
         )}
+        {(user.role === "student" || user.role === "alumni") && (
+          <button
+            onClick={() => navigate("/jobs/my/applicants")}
+            className="w-full rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 text-left"
+          >
+            View Applicants
+          </button>
+        )}
+
+        {(user.role === "student" || user.role === "alumni") && (
+          <button
+            onClick={() => navigate("/jobs/my/applications")}
+            className="w-full rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 text-left"
+          >
+            My Job Applications
+          </button>
+        )}
 
         {user.role === "faculty" && (
           <button
@@ -344,6 +362,17 @@ const QuickActions = ({ user, navigate }) => {
             className="w-full rounded-lg bg-blue-600/90 hover:bg-blue-500 px-3 py-2 text-left text-white"
           >
             Create new event
+          </button>
+        )}
+
+        {(user.role === "faculty" ||
+          user.role === "admin" ||
+          user.role === "alumni") && (
+          <button
+            onClick={() => navigate("/jobs/my/posted")}
+            className="w-full rounded-lg bg-blue-600/90 hover:bg-blue-500 px-3 py-2 text-left text-white"
+          >
+            My Posted Jobs
           </button>
         )}
 

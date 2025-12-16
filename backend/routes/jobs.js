@@ -15,13 +15,6 @@ const roleAuth = require("../middleware/roleAuth");
  */
 router.get("/", jobController.getAllJobs);
 
-/**
- * @route   GET /api/jobs/:id
- * @desc    Get single job by ID
- * @access  Public
- */
-router.get("/:id", jobController.getJobById);
-
 // ========== PROTECTED ROUTES (All authenticated users) ==========
 
 /**
@@ -56,6 +49,19 @@ router.get(
 );
 
 /**
+ * @route   POST /api/jobs
+ * @desc    Create a new job
+ * @access  Private (Alumni, Faculty, Admin)
+ * @body    { title, description, company, location, jobType, requirements, deadline, ... }
+ */
+router.post(
+  "/create",
+  auth,
+  roleAuth("alumni", "faculty", "admin"),
+  jobController.createJob
+);
+
+/**
  * @route   POST /api/jobs/:id/bookmark
  * @desc    Bookmark or unbookmark a job
  * @access  Private
@@ -63,19 +69,6 @@ router.get(
 router.post("/:id/bookmark", auth, jobController.bookmarkJob);
 
 // ========== JOB CREATION (Alumni, Faculty, Admin only) ==========
-
-/**
- * @route   POST /api/jobs
- * @desc    Create a new job
- * @access  Private (Alumni, Faculty, Admin)
- * @body    { title, description, company, location, jobType, requirements, deadline, ... }
- */
-router.post(
-  "/",
-  auth,
-  roleAuth("alumni", "faculty", "admin"),
-  jobController.createJob
-);
 
 /**
  * @route   PUT /api/jobs/:id
@@ -138,5 +131,12 @@ router.put(
   roleAuth("alumni", "faculty", "admin"),
   jobController.updateApplicationStatus
 );
+
+/**
+ * @route   GET /api/jobs/:id
+ * @desc    Get single job by ID
+ * @access  Public
+ */
+router.get("/:id", jobController.getJobById);
 
 module.exports = router;
