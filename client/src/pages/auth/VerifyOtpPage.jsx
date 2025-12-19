@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import api from "../../api/client";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import logo from "../../assets/logo.webp";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import Alert from "../../components/Alert";
 
 
 const VerifyOtpPage = () => {
@@ -82,87 +86,103 @@ const VerifyOtpPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 text-white">
-      <div className="w-full max-w-md bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <h1 className="text-2xl font-semibold text-slate-50 mb-1">
-          Verify your email
-        </h1>
-        <p className="text-sm text-slate-400 mb-4">
-          Enter the 6-digit code we sent to your email to activate your account.
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-50 selection:bg-blue-500/30 px-4 py-12 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-tr from-blue-500/10 to-purple-500/10 blur-3xl -z-10" />
+      
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <img
+            src={logo}
+            alt="Unilancer"
+            className="h-20 w-max object-contain group-hover:scale-105 transition-transform"
+          />
+        </div>
 
-        {error && (
-          <div className="mb-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-            {error}
+        {/* Card */}
+        <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-50 mb-2">
+            Verify Your Email
+          </h1>
+          <p className="text-sm text-slate-400 mb-6 leading-relaxed">
+            Enter the 6-digit code we sent to activate your account.
+          </p>
+
+          {error && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-red-400 text-sm font-semibold">{error}</p>
+            </div>
+          )}
+
+          {info && (
+            <div className="mb-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-blue-300 text-sm font-semibold">{info}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleVerify} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="you@college.edu"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={!!initialEmail}
+                required
+                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              {initialEmail && (
+                <p className="text-xs text-slate-500 mt-2">
+                  Using email from registration
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                6-digit Code
+              </label>
+              <input
+                type="text"
+                placeholder="000000"
+                inputMode="numeric"
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, ""))}
+                required
+                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isVerifying}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isVerifying ? "Verifying..." : "Verify Email"}
+            </button>
+          </form>
+
+          <div className="mt-6 flex items-center justify-between text-sm">
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={isResending}
+              className="text-blue-400 hover:text-blue-300 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isResending ? "Resending..." : "Resend Code"}
+            </button>
+            <Link
+              to="/login"
+              className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            >
+              Back to Login
+            </Link>
           </div>
-        )}
-
-        {info && (
-          <div className="mb-3 rounded-lg border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm text-blue-200">
-            {info}
-          </div>
-        )}
-
-        <form onSubmit={handleVerify} className="space-y-4 mt-2">
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              Email
-            </label>
-            <input
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={!!initialEmail}
-              placeholder="you@college.edu"
-            />
-            {initialEmail && (
-              <p className="mt-1 text-xs text-slate-500">
-                Using email from registration. Go back and register again if this
-                is not yours.
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              6-digit code
-            </label>
-            <input
-              className="input tracking-[0.4em] text-center"
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, ""))}
-              placeholder="••••••"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isVerifying}
-            className="w-full rounded-lg bg-blue-600 hover:bg-blue-500 py-2.5 text-sm font-medium text-white disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isVerifying ? "Verifying..." : "Verify email"}
-          </button>
-        </form>
-
-        <div className="mt-4 flex items-center justify-between text-xs text-slate-400">
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={isResending}
-            className="text-blue-400 hover:text-blue-300 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isResending ? "Resending..." : "Resend code"}
-          </button>
-
-          <Link to="/login" className="hover:text-slate-200">
-            Back to login
-          </Link>
         </div>
       </div>
     </div>

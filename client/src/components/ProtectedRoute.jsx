@@ -16,9 +16,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
-        <div className="animate-pulse text-lg font-medium">
-          Checking your session...
+      <div className="min-h-screen flex items-center justify-center bg-light">
+        <div className="animate-pulse text-lg font-medium text-dark">
+          Loading...
         </div>
       </div>
     );

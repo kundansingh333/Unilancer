@@ -3,6 +3,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
+import logo from "../../assets/logo.webp";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import Alert from "../../components/Alert";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
