@@ -15,3 +15,13 @@ export const fetchEventRegistrations = (id, params) =>
 export const markAttendance = (id, userId, data) =>
   api.put(`/events/${id}/attendance/${userId}`, data);
 export const getFeaturedEvents = () => api.get("/events/featured");
+// export const uploadEventImage = (file) => {
+//   const formData = new FormData();
+//   formData.append("image", file);
+
+//   return api.post("/events/upload-image", formData, {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+// };

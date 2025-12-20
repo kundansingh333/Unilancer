@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useEventStore from "../../store/eventStore";
 import { toast } from "react-hot-toast";
+import { uploadImage } from "../../api/uploadApi";
 
 const UpdateEventPage = () => {
   const { id } = useParams();
@@ -44,7 +45,7 @@ const UpdateEventPage = () => {
       maxTeamSize: 1,
     },
 
-    eventImage: "",
+    eventImage: null,
     tags: [],
     agenda: [],
     prizes: [],
@@ -123,16 +124,35 @@ const UpdateEventPage = () => {
   // -----------------------
   // UPLOAD IMAGE
   // -----------------------
-  const handleImageUpload = (e) => {
+  // const handleImageUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+  //   const reader = new FileReader();
+
+  //   reader.onload = () => {
+  //     setForm((prev) => ({ ...prev, eventImage: reader.result }));
+  //   };
+
+  //   reader.readAsDataURL(file);
+  // };
+
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
 
-    reader.onload = () => {
-      setForm((prev) => ({ ...prev, eventImage: reader.result }));
-    };
+    try {
+      const imageUrl = await uploadImage(file);
 
-    reader.readAsDataURL(file);
+      setForm((prev) => ({
+        ...prev,
+        eventImage: imageUrl, // ✅ Cloudinary URL
+      }));
+
+      toast.success("Image uploaded");
+    } catch (err) {
+      console.error(err);
+      toast.error("Image upload failed");
+    }
   };
 
   // -----------------------

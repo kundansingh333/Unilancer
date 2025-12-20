@@ -185,6 +185,8 @@ exports.getEventById = async (req, res) => {
 // controllers/eventController.js
 // const Event = require("../models/Event");
 
+//
+
 exports.getAllEvents = async (req, res) => {
   try {
     const {
@@ -715,6 +717,30 @@ exports.getFeaturedEvents = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch featured events",
+    });
+  }
+};
+
+//cloudinary setup
+
+exports.uploadEventImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: "No image uploaded",
+      });
+    }
+
+    res.json({
+      success: true,
+      imageUrl: req.file.path, // ✅ Cloudinary URL
+    });
+  } catch (err) {
+    console.error("Event image upload error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Image upload failed",
     });
   }
 };
