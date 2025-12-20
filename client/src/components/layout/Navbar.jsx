@@ -1,7 +1,9 @@
-// src/components/Navbar.jsx
+// src/components/layout/Navbar.jsx
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
+import logo from "../../assets/logo.webp";
+import Button from "../Button";
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
@@ -15,69 +17,59 @@ const Navbar = () => {
   };
 
   const isActive = (path) =>
-    location.pathname === path ? "text-blue-400" : "text-slate-300";
-
-  const avatarLetter = user?.name?.[0]?.toUpperCase() || "U";
+    location.pathname === path ? "text-blue-400 font-semibold" : "text-slate-400 hover:text-blue-400 transition-colors";
 
   return (
-    <nav className="w-full bg-slate-950/95 border-b border-slate-800 sticky top-0 z-40 backdrop-blur">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full bg-slate-950/90 backdrop-blur border-b border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* LEFT: Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-xl bg-blue-600 flex items-center justify-center text-white text-lg font-bold">
-            U
-          </div>
-          <span className="text-white font-semibold text-lg">Unilancer</span>
+        <Link to="/" className="flex items-center gap-2 group">
+          <img
+            src={logo}
+            alt="Unilancer"
+            className="h-20 w-max object-contain group-hover:scale-105 transition-transform"
+          />
         </Link>
 
-        {/* CENTER */}
-        <div className="hidden md:flex items-center gap-6 text-sm">
-          <Link to="/" className={isActive("/")}>
+        {/* CENTER - Navigation Links */}
+        <div className="hidden lg:flex items-center gap-8">
+          <Link to="/" className={`text-sm font-medium transition-colors ${isActive("/")}`}>
             Home
           </Link>
-          <Link to="/gigs" className={isActive("/gigs")}>
+          <Link to="/gigs" className={`text-sm font-medium transition-colors ${isActive("/gigs")}`}>
             Gigs
           </Link>
-          <Link to="/orders" className={isActive("/orders")}>
-            Orders
-          </Link>
-          <Link to="/events" className={isActive("/events")}>
-            Events
-          </Link>
-          <Link to="/jobs" className={isActive("/jobs")}>
+          <Link to="/jobs" className={`text-sm font-medium transition-colors ${isActive("/jobs")}`}>
             Jobs
           </Link>
+          <Link to="/events" className={`text-sm font-medium transition-colors ${isActive("/events")}`}>
+            Events
+          </Link>
+          <Link to="/orders" className={`text-sm font-medium transition-colors ${isActive("/orders")}`}>
+            Orders
+          </Link>
 
-          {/* ✅ Create Event (ONLY for faculty & admin) */}
+          {/* Create Event - Faculty & Admin Only */}
           {user && (user.role === "faculty" || user.role === "admin") && (
-            <Link
-              to="/events/create"
-              className="text-slate-200 hover:text-blue-400"
-            >
+            <Link to="/events/create" className={`text-sm font-medium transition-colors ${isActive("/events/create")}`}>
               Create Event
             </Link>
           )}
         </div>
 
-        <Link to="/jobs/create" className="text-slate-200 hover:text-blue-400">
-          Create Jobs
-        </Link>
-
-        {/* RIGHT */}
+        {/* RIGHT: Auth & Actions */}
         <div className="flex items-center gap-3">
           {!user && (
             <>
-              <Link
-                to="/login"
-                className="text-xs sm:text-sm text-slate-200 hover:text-white"
-              >
-                Login
+              <Link to="/login" className="hidden sm:block">
+                <Button variant="ghost" size="sm">
+                  Login
+                </Button>
               </Link>
-              <Link
-                to="/register"
-                className="text-xs sm:text-sm px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium"
-              >
-                Sign up
+              <Link to="/register">
+                <Button variant="light" size="sm">
+                  Sign Up
+                </Button>
               </Link>
             </>
           )}
@@ -85,19 +77,18 @@ const Navbar = () => {
           {user && (
             <>
               {/* Dashboard */}
-              <Link
-                to="/dashboard"
-                className="hidden sm:inline-flex text-xs sm:text-sm px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-blue-500 hover:text-blue-300"
-              >
-                Dashboard
+              <Link to="/dashboard" className="hidden lg:block">
+                <Button variant="ghost" size="sm">
+                  Dashboard
+                </Button>
               </Link>
 
-              {/* PROFILE */}
+              {/* Profile */}
               <Link
                 to="/profile"
-                className="flex items-center gap-2 group cursor-pointer"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group"
               >
-                <div className="h-9 w-9 rounded-full overflow-hidden border border-slate-700 bg-slate-800 flex items-center justify-center text-sm font-semibold text-slate-100 group-hover:ring-2 group-hover:ring-blue-500 transition">
+                <div className="h-8 w-8 rounded-full overflow-hidden border-2 border-slate-700 bg-blue-600 flex items-center justify-center text-xs font-bold text-white">
                   {user.profilePicture ? (
                     <img
                       src={user.profilePicture}
@@ -108,18 +99,19 @@ const Navbar = () => {
                     avatarLetter
                   )}
                 </div>
-                <span className="hidden sm:inline text-xs text-slate-300 max-w-[120px] truncate group-hover:text-white">
+                <span className="hidden sm:inline text-sm text-slate-300 max-w-[100px] truncate group-hover:text-blue-400 transition-colors">
                   {user.name}
                 </span>
               </Link>
 
-              {/* LOGOUT */}
-              <button
+              {/* Logout */}
+              <Button
                 onClick={handleLogout}
-                className="text-xs sm:text-sm px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200"
+                variant="ghost"
+                size="sm"
               >
                 Logout
-              </button>
+              </Button>
             </>
           )}
         </div>

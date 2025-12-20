@@ -1,5 +1,4 @@
 // src/pages/HomePage.jsx
-
 import HeroSection from "../components/layout/HeroSection";
 
 const HomePage = () => {

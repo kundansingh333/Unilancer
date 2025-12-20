@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
+import logo from "../../assets/logo.webp";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -10,7 +11,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 👇 Default to home ("/") instead of "/dashboard"
   const from = location.state?.from?.pathname || "/";
 
   const handleChange = (e) => {
@@ -27,77 +27,110 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-      <div className="w-full max-w-md bg-slate-900/70 border border-slate-800 rounded-2xl p-8 shadow-xl">
-        <h1 className="text-2xl font-semibold text-slate-50 mb-1">
-          Welcome back to <span className="text-blue-500">Unilancer</span>
-        </h1>
-        <p className="text-sm text-slate-400 mb-6">
-          Login to access gigs, events, and your freelance dashboard.
-        </p>
-
-        {error && (
-          <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="you@college.edu"
-              required
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-50 selection:bg-blue-500/30 px-4 py-12 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-tr from-blue-500/10 to-purple-500/10 blur-3xl -z-10" />
+      
+      <div className="w-full max-w-md">
+        {/* Card with Glassmorphism */}
+        <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <img
+              src={logo}
+              alt="Unilancer"
+              className="h-20 w-max object-contain group-hover:scale-105 transition-transform"
             />
           </div>
 
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="••••••••"
-              required
-            />
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-50 text-center mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-sm text-slate-400 text-center mb-8 leading-relaxed">
+            Login to your Unilancer account
+          </p>
+
+          {/* Error Alert */}
+          {error && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
+              <p className="text-red-400 text-sm font-semibold">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Input */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                value={form.email}
+                onChange={handleChange}
+                required
+                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={handleChange}
+                required
+                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
+              />
+            </div>
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-8 text-base"
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="flex-1 h-px bg-slate-800" />
+            <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">OR</span>
+            <div className="flex-1 h-px bg-slate-800" />
           </div>
 
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span></span>
+          {/* Links */}
+          <div className="space-y-3">
             <Link
               to="/forgot-password"
-              className="text-blue-400 hover:text-blue-300 font-medium"
+              className="block text-center text-sm font-medium text-slate-400 hover:text-blue-400 transition-colors"
             >
               Forgot password?
             </Link>
+            <p className="text-center text-xs text-slate-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-blue-400 font-medium hover:text-blue-300 transition-colors"
+              >
+                Sign up
+              </Link>
+            </p>
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed py-2.5 text-sm font-medium text-white transition"
-          >
-            {isLoading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-xs text-slate-400">
-          Don&apos;t have an account?{" "}
-          <Link
-            to="/register"
-            className="text-blue-400 hover:text-blue-300 font-medium"
-          >
-            Register
-          </Link>
+        {/* Additional Info */}
+        <p className="text-center text-slate-500 text-xs mt-6">
+          By signing in, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>
     </div>

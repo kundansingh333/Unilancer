@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+  color: #1E1F35;
+  background-color: #F5F5F5;
+}
+
+/* Remove default focus rings - we use Tailwind utilities */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+}
