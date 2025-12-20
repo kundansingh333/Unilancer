@@ -41,10 +41,41 @@ import EditJobPage from "./pages/jobs/EditJobPage";
 import MyPostedJobsPage from "./pages/jobs/MyPostedJobsPage";
 import MyApplicationsPage from "./pages/jobs/MyApplicationsPage";
 import ApplyJob from "./pages/jobs/ApplyJob";
+import { useEffect } from "react";
+import useAuthStore from "./store/authStore";
+import useMessageStore from "./store/messageStore";
+import ConversationsPage from "./pages/message/ConversationsPage";
+import ChatPage from "./pages/message/ChatPage";
+
 // import OrganizedEventsPage from "./pages/events/OrganizedEventsPage";
 // import RegisteredEventsPage from "./pages/events/RegisteredEventsPage";
 
 const App = () => {
+  // const { user } = useAuthStore();
+  // const { connectSocket, disconnectSocket } = useMessageStore();
+
+  // useEffect(() => {
+  //   if (user?._id) {
+  //     connectSocket(user._id);
+  //   }
+
+  //   return () => {
+  //     disconnectSocket();
+  //   };
+  // }, [user]);
+  const user = useAuthStore((state) => state.user);
+  const connectSocket = useMessageStore((state) => state.connectSocket);
+  const disconnectSocket = useMessageStore((state) => state.disconnectSocket);
+
+  useEffect(() => {
+    if (user?._id) {
+      connectSocket(user._id);
+    }
+
+    return () => {
+      disconnectSocket();
+    };
+  }, [user?._id]);
   return (
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
@@ -275,6 +306,10 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+
+          {/* MESSAGES */}
+          <Route path="/messages" element={<ConversationsPage />} />
+          <Route path="/messages/:otherUserId" element={<ChatPage />} />
 
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
