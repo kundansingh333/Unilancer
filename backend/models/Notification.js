@@ -225,10 +225,10 @@ const notificationSchema = new mongoose.Schema({
 
 // ========== INDEXES ==========
 // Compound indexes for efficient queries
-notificationSchema.index({ userId: 1, isRead: 1, createdAt: -1 });
-notificationSchema.index({ userId: 1, type: 1 });
-notificationSchema.index({ userId: 1, priority: 1, createdAt: -1 });
-notificationSchema.index({ groupKey: 1 });
+// notificationSchema.index({ userId: 1, isRead: 1, createdAt: -1 });
+// notificationSchema.index({ userId: 1, type: 1 });
+// notificationSchema.index({ userId: 1, priority: 1, createdAt: -1 });
+// notificationSchema.index({ groupKey: 1 });
 
 // TTL index for auto-deletion of old read notifications (after 90 days)
 notificationSchema.index(

@@ -478,10 +478,10 @@ eventSchema.statics.searchEvents = function (query) {
     { score: { $meta: "textScore" } }
   ).sort({ score: { $meta: "textScore" } });
 };
-eventSchema.index({ title: "text", description: "text" });
-eventSchema.index({ dateTime: 1 });
-eventSchema.index({ eventType: 1 });
-eventSchema.index({ venueType: 1 });
+// eventSchema.index({ title: "text", description: "text" });
+// eventSchema.index({ dateTime: 1 });
+// eventSchema.index({ eventType: 1 });
+// eventSchema.index({ venueType: 1 });
 
 const Event = mongoose.model("Event", eventSchema);
 

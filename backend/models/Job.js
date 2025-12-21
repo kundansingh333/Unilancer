@@ -283,13 +283,13 @@ const jobSchema = new mongoose.Schema({
 });
 
 // ========== INDEXES ==========
-jobSchema.index({ title: "text", description: "text", company: "text" });
-jobSchema.index({ postedBy: 1 });
-jobSchema.index({ status: 1, isApproved: 1 });
-jobSchema.index({ deadline: 1 });
-jobSchema.index({ "requirements.branches": 1 });
-jobSchema.index({ jobType: 1 });
-jobSchema.index({ createdAt: -1 });
+// jobSchema.index({ title: "text", description: "text", company: "text" });
+// jobSchema.index({ postedBy: 1 });
+// jobSchema.index({ status: 1, isApproved: 1 });
+// jobSchema.index({ deadline: 1 });
+// jobSchema.index({ "requirements.branches": 1 });
+// jobSchema.index({ jobType: 1 });
+// jobSchema.index({ createdAt: -1 });
 
 // ========== MIDDLEWARE ==========
 

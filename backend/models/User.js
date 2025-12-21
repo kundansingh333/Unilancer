@@ -1,5 +1,3 @@
-
-
 // backend/models/User.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
@@ -254,10 +252,10 @@ const userSchema = new mongoose.Schema({
 });
 
 // ========== INDEXES ==========
-userSchema.index({ email: 1 });
-userSchema.index({ role: 1 });
-userSchema.index({ rollNumber: 1 }, { sparse: true });
-userSchema.index({ employeeId: 1 }, { sparse: true });
+// userSchema.index({ email: 1 });
+// userSchema.index({ role: 1 });
+// userSchema.index({ rollNumber: 1 }, { sparse: true });
+// userSchema.index({ employeeId: 1 }, { sparse: true });
 
 // ========== MIDDLEWARE (FIXED FOR STABILITY) ==========
 userSchema.pre("save", async function (next) {
