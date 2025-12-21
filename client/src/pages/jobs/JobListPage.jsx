@@ -96,7 +96,7 @@ const JobListPage = () => {
         {loading && <p className="text-slate-400">Loading jobs...</p>}
         {error && <p className="text-red-400">{error}</p>}
 
-        {!loading && jobs.length === 0 && (
+        {!loading && jobs?.length === 0 && (
           <p className="text-slate-400">No jobs found</p>
         )}
 
