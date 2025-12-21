@@ -23,7 +23,7 @@ import OrderDetailPage from "./pages/orders/OrderDetailPage";
 
 import EventListPage from "./pages/events/EventListPage";
 import EventDetailPage from "./pages/events/EventDetailPage";
-import CreateEventPage from "./pages/events/createEventPage";
+import CreateEventPage from "./pages/events/CreateEventPage";
 import EditEventPage from "./pages/events/EditEventPage";
 import MyRegisteredEventsPage from "./pages/events/MyRegisteredEventPage";
 import MyOrganizedEventsPage from "./pages/events/MyOrganizedEventsPage";

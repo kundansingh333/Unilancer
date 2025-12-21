@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadImage } from "../../api/uploadApi";
-import useEventStore from "../../store/eventStore";
 
 const CreateEventPage = () => {
   const navigate = useNavigate();
-  const { createEvent, isLoading, error, setError } = useEventStore();
+  const { createEvent, uploadEventImage, isLoading, error, setError } =
+    useEventStore();
 
   const [form, setForm] = useState({
     title: "",
