@@ -7,10 +7,9 @@ cloudinary.config({
 });
 
 console.log({
-  cloud: process.env.CLOUDINARY_CLOUD_NAME,
-  key: process.env.CLOUDINARY_API_KEY,
-  secret: process.env.CLOUDINARY_API_SECRET ? "OK" : "MISSING",
+  cloud: process.env.CLOUDINARY_NAME,
+  key: process.env.CLOUDINARY_KEY,
+  secret: process.env.CLOUDINARY_SECRET ? "OK" : "MISSING",
 });
-
 
 module.exports = cloudinary;
