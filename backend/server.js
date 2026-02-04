@@ -250,7 +250,7 @@ app.use(
 );
 
 // 🔥 THIS FIXES REGISTER / LOGIN / PREFLIGHT
-app.options("*", cors());
+// app.options("*", cors());
 
 // ================= ROUTES =================
 app.use("/api/upload", require("./routes/upload"));
