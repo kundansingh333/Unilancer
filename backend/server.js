@@ -119,7 +119,6 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5001",
   "https://unilancer-frontend.vercel.app",
-  "https://unilancer-frontend-git-main-kundansingh333s-projects.vercel.app",
 ];
 
 // ✅ 2. Update Express CORS to use the list above
@@ -139,8 +138,9 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
+  }),
 );
+app.options("*", cors());
 
 app.use("/api/upload", require("./routes/upload"));
 
