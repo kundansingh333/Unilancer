@@ -165,7 +165,7 @@ app.use(
 );
 
 // 🔥 REQUIRED for preflight (THIS FIXES YOUR ERROR)
-app.options("*", cors());
+// app.options("*", cors());
 
 app.use("/api/upload", require("./routes/upload"));
 
