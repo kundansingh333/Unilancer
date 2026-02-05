@@ -6,7 +6,8 @@ const nodemailer = require("nodemailer");
 
 // ========== EMAIL CONFIGURATION ==========
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  // host: "smtp.gmail.com"
+  host: "gmail",
   port: 587,
   secure: false,
   auth: {
@@ -26,6 +27,20 @@ const generateToken = (userId, role) => {
 };
 
 // ========== HELPER FUNCTION: Send Email ==========
+// const sendEmail = async (to, subject, html) => {
+//   try {
+//     await transporter.sendMail({
+//       from: `"Unilancer" <${process.env.SMTP_USER}>`,
+//       to,
+//       subject,
+//       html,
+//     });
+//   } catch (err) {
+//     console.error("Email sending failed:", err);
+//     throw new Error("Failed to send email");
+//   }
+// };
+
 const sendEmail = async (to, subject, html) => {
   try {
     await transporter.sendMail({
@@ -34,9 +49,10 @@ const sendEmail = async (to, subject, html) => {
       subject,
       html,
     });
+    console.log("✅ Email sent to:", to);
   } catch (err) {
-    console.error("Email sending failed:", err);
-    throw new Error("Failed to send email");
+    console.error("❌ Email failed (non-blocking):", err.message);
+    // DO NOT throw
   }
 };
 
@@ -245,7 +261,7 @@ exports.verifyOtp = async (req, res) => {
 
     // Need access to OTP fields (select: false)
     const user = await User.findOne({ email }).select(
-      "+emailVerificationCode +emailVerificationCodeExpires"
+      "+emailVerificationCode +emailVerificationCodeExpires",
     );
 
     if (!user || !user.emailVerificationCode) {
@@ -316,7 +332,7 @@ exports.resendEmailOtp = async (req, res) => {
 
     // Find user (we need OTP fields, so select them)
     const user = await User.findOne({ email }).select(
-      "+emailVerificationCode +emailVerificationCodeExpires"
+      "+emailVerificationCode +emailVerificationCodeExpires",
     );
 
     if (!user) {
@@ -507,7 +523,7 @@ exports.forgotPasswordOtp = async (req, res) => {
     await sendEmail(
       user.email,
       "Your Password Reset OTP - Unilancer",
-      emailHtml
+      emailHtml,
     );
 
     res.json({
@@ -545,7 +561,7 @@ exports.resetPasswordOtp = async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select(
-      "+resetPasswordCode +resetPasswordCodeExpires"
+      "+resetPasswordCode +resetPasswordCodeExpires",
     );
 
     if (!user || !user.resetPasswordCode) {
