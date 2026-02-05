@@ -70,6 +70,9 @@ const App = () => {
   const connectSocket = useMessageStore((state) => state.connectSocket);
   const disconnectSocket = useMessageStore((state) => state.disconnectSocket);
 
+  // src/main.jsx or src/App.jsx
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+
   useEffect(() => {
     if (user?._id) {
       connectSocket(user._id);
