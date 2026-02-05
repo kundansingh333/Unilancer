@@ -884,7 +884,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// SMTP verify (log only, no crash)
+// Optional: verify SMTP (logs only)
 transporter.verify((err) => {
   if (err) {
     console.error("❌ SMTP NOT READY:", err.message);
@@ -937,7 +937,7 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Role validations (unchanged)
+    // Role validations
     if (role === "student") {
       const { branch, year, section, rollNumber } = otherFields;
       if (!branch || !year || !section || !rollNumber) {
@@ -976,7 +976,7 @@ exports.register = async (req, res) => {
       ...otherFields,
     });
 
-    // ===== OTP =====
+    // 🔐 OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.emailVerificationCode = crypto
       .createHash("sha256")
@@ -1009,7 +1009,7 @@ exports.register = async (req, res) => {
       requiresApproval: role !== "student",
       userId: user._id,
 
-      // DEV ONLY (production में NODE_ENV=production रखना)
+      // ⚠️ DEV MODE OTP (REMOVE IN PRODUCTION)
       otp:
         process.env.NODE_ENV !== "production" && !emailSent ? otp : undefined,
     });
@@ -1123,40 +1123,5 @@ exports.login = async (req, res) => {
     });
   }
 };
-
-/* ===========================================================
-   STUB FUNCTIONS (REQUIRED BY routes/auth.js)
-   routes को TOUCH नहीं करेंगे – सिर्फ crash रोकने के लिए
-   =========================================================== */
-
-exports.verifyEmail = async (req, res) =>
-  res.status(410).json({
-    success: false,
-    error: "Link verification disabled. Use OTP.",
-  });
-
-exports.resendVerification = async (req, res) =>
-  res.json({ success: true, message: "Use OTP resend." });
-
-exports.forgotPassword = async (req, res) =>
-  res.json({ success: true, message: "Use OTP password reset." });
-
-exports.resetPassword = async (req, res) =>
-  res.json({ success: true, message: "Handled via OTP." });
-
-exports.resendEmailOtp = async (req, res) =>
-  res.json({ success: true, message: "OTP resent." });
-
-exports.logout = async (req, res) =>
-  res.json({ success: true, message: "Logged out." });
-
-exports.getCurrentUser = async (req, res) =>
-  res.status(501).json({ success: false, error: "Not implemented." });
-
-exports.forgotPasswordOtp = async (req, res) =>
-  res.json({ success: true, message: "OTP sent if email exists." });
-
-exports.resetPasswordOtp = async (req, res) =>
-  res.json({ success: true, message: "Password reset via OTP." });
 
 module.exports = exports;
