@@ -13,12 +13,12 @@ const ConversationsPage = () => {
   }, []);
 
   if (isLoading) {
-    return <div className="p-6 text-slate-400">Loading conversations...</div>;
+    return <div className="px-4 py-6 text-slate-400">Loading conversations...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
-      <div className="max-w-4xl mx-auto space-y-4">
+    <div className="min-h-screen bg-slate-950 text-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-4">
         <h1 className="text-2xl font-semibold">Messages</h1>
 
         {conversations.length === 0 ? (
@@ -29,13 +29,13 @@ const ConversationsPage = () => {
               <div
                 key={conv._id._id}
                 onClick={() => navigate(`/messages/${conv._id._id}`)}
-                className="flex justify-between items-center p-4 bg-slate-900 rounded
-                           hover:bg-slate-800 cursor-pointer transition"
+                className="flex justify-between items-center p-3 sm:p-4 bg-slate-900 rounded-lg
+                           hover:bg-slate-800 cursor-pointer transition gap-3"
               >
                 {/* USER INFO */}
                 <div>
                   <p className="font-medium">{conv._id.name}</p>
-                  <p className="text-sm text-slate-400 truncate max-w-xs">
+                  <p className="text-sm text-slate-400 truncate max-w-[150px] sm:max-w-xs">
                     {conv.lastMessage?.content}
                   </p>
                 </div>

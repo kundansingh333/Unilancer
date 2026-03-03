@@ -66,7 +66,7 @@ const EventDetailPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* EVENT BANNER */}
-      <div className="w-full h-60">
+      <div className="w-full h-40 sm:h-60">
         <img
           src={event.eventImage}
           alt="event banner"
@@ -76,7 +76,7 @@ const EventDetailPage = () => {
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         {/* TITLE */}
-        <h1 className="text-3xl font-semibold">{event.title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">{event.title}</h1>
 
         {/* BASIC INFO */}
         <div className="grid sm:grid-cols-2 gap-4 text-sm text-slate-300">

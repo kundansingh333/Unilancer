@@ -1,0 +1,7 @@
+--- /Users/kundankumarsingh/Unilancer/client/src/pages/message/ChatPage.jsx
++++ /Users/kundankumarsingh/Unilancer/client/src/pages/message/ChatPage.jsx
+@@ -62,3 +62,3 @@
+   return (
+-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
++    <div className="h-[calc(100dvh-64px)] bg-slate-950 text-white flex flex-col">
+       {/* HEADER */}

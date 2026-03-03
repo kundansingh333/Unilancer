@@ -93,7 +93,7 @@ const RegisterPage = () => {
       
       <div className="w-full max-w-2xl">
         {/* Card with Glassmorphism */}
-        <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl">
+        <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <img

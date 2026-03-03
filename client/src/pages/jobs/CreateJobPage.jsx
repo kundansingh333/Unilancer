@@ -60,7 +60,8 @@ const CreateJobPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 text-white">
+    <div className="min-h-screen bg-slate-950">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 text-white">
       <h1 className="text-2xl font-semibold mb-6">Create Job</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -189,6 +190,7 @@ const CreateJobPage = () => {
           {isLoading ? "Creating..." : "Create Job"}
         </button>
       </form>
+      </div>
     </div>
   );
 };

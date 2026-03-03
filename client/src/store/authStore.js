@@ -223,30 +223,31 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
-  // ================= FORGOT PASSWORD =================
-  forgotPassword: async (email) => {
+  // ================= FORGOT PASSWORD (OTP) =================
+  forgotPasswordOtp: async (email) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await api.post("/auth/forgot-password", { email });
+      const res = await api.post("/auth/forgot-password-otp", { email });
       set({ isLoading: false });
       return {
         success: true,
-        message: res.data?.message || "Reset link sent if email exists.",
+        message: res.data?.message || "OTP sent if email exists.",
       };
     } catch (err) {
       const message =
-        err?.response?.data?.error || "Failed to send reset link.";
+        err?.response?.data?.error || "Failed to send OTP.";
       set({ isLoading: false, error: message });
       return { success: false, error: message };
     }
   },
 
-  // ================= RESET PASSWORD =================
-  resetPassword: async ({ token, newPassword }) => {
+  // ================= RESET PASSWORD (OTP) =================
+  resetPasswordOtp: async ({ email, otp, newPassword }) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await api.post("/auth/reset-password", {
-        token,
+      const res = await api.post("/auth/reset-password-otp", {
+        email,
+        otp,
         newPassword,
       });
       set({ isLoading: false });

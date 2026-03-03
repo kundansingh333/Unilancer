@@ -51,10 +51,10 @@ const JobDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-950 text-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <header>
-          <h1 className="text-2xl font-semibold">{job.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{job.title}</h1>
           <p className="text-slate-400">{job.company}</p>
         </header>
 

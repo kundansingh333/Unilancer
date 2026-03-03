@@ -291,8 +291,8 @@ const MyGigsPage = () => {
 
         {/* EDIT MODAL */}
         {editGig && editForm && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60">
-            <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 p-6">
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
+            <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-slate-50 mb-4">
                 Edit gig
               </h2>

@@ -397,8 +397,8 @@ const OrderCard = ({ order }) => {
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="space-y-1 min-w-0">
           <p className="text-xs text-slate-500">
             #{order.orderNumber || (order._id ? order._id.slice(-8) : "—")}
           </p>
@@ -413,7 +413,7 @@ const OrderCard = ({ order }) => {
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-2">
           <span className={statusClass}>{order.status.replace("_", " ")}</span>
           <p className="text-xs text-slate-400">
             {order.price} {order.currency || "INR"}

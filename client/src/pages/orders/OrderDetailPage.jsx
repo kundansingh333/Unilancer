@@ -372,28 +372,38 @@ const OrderDetailPage = () => {
                         {deliverables.map((d, i) => (
                           <div
                             key={i}
-                            className="grid grid-cols-12 gap-2 items-center mb-2"
+                            className="space-y-2 mb-3 p-2 rounded-lg bg-slate-950/50 border border-slate-800"
                           >
-                            <select
-                              value={d.type}
-                              onChange={(e) =>
-                                updateDeliverable(i, "type", e.target.value)
-                              }
-                              className="col-span-3 rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
-                            >
-                              <option value="link">Link</option>
-                              <option value="file">File</option>
-                              <option value="text">Text</option>
-                            </select>
+                            <div className="flex flex-wrap gap-2">
+                              <select
+                                value={d.type}
+                                onChange={(e) =>
+                                  updateDeliverable(i, "type", e.target.value)
+                                }
+                                className="rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
+                              >
+                                <option value="link">Link</option>
+                                <option value="file">File</option>
+                                <option value="text">Text</option>
+                              </select>
 
-                            <input
-                              value={d.name}
-                              onChange={(e) =>
-                                updateDeliverable(i, "name", e.target.value)
-                              }
-                              placeholder="Name"
-                              className="col-span-3 rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
-                            />
+                              <input
+                                value={d.name}
+                                onChange={(e) =>
+                                  updateDeliverable(i, "name", e.target.value)
+                                }
+                                placeholder="Name"
+                                className="flex-1 min-w-[80px] rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
+                              />
+
+                              <button
+                                onClick={() => removeDeliverableRow(i)}
+                                className="rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs px-2 py-1"
+                                type="button"
+                              >
+                                Remove
+                              </button>
+                            </div>
 
                             <input
                               value={d.url}
@@ -401,16 +411,8 @@ const OrderDetailPage = () => {
                                 updateDeliverable(i, "url", e.target.value)
                               }
                               placeholder="URL (or cloud link)"
-                              className="col-span-4 rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
+                              className="w-full rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
                             />
-
-                            <button
-                              onClick={() => removeDeliverableRow(i)}
-                              className="col-span-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs px-2 py-1"
-                              type="button"
-                            >
-                              Remove
-                            </button>
 
                             <input
                               value={d.description}
@@ -422,7 +424,7 @@ const OrderDetailPage = () => {
                                 )
                               }
                               placeholder="Short description (optional)"
-                              className="col-span-12 mt-1 rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
+                              className="w-full rounded-lg bg-slate-950 border border-slate-700 px-2 py-1 text-xs"
                             />
                           </div>
                         ))}
