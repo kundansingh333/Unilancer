@@ -1,8 +1,9 @@
-// src/pages/orders/OrderDetailPage.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import useOrderStore from "../../store/orderStore";
 import useAuthStore from "../../store/authStore";
+import { adminSendOrderMessage } from "../../api/adminApi";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
@@ -75,10 +76,12 @@ const OrderDetailPage = () => {
   const isFreelancer = currentOrder
     ? currentOrder.freelancerId?._id === user?._id
     : false;
+  const isAdmin = user?.role === "admin";
 
   const handleAccept = async () => {
     const res = await acceptOrder(id);
-    if (!res.success) alert(res.error || "Failed to accept");
+    if (!res.success) toast.error(res.error || "Failed to accept");
+    else toast.success("Order accepted!");
   };
 
   const handleDeliver = async () => {
@@ -93,14 +96,15 @@ const OrderDetailPage = () => {
       .filter((d) => d.url && d.url.trim().length > 0);
 
     if (filtered.length === 0) {
-      return setError(
+      return toast.error(
         "Please provide at least one deliverable URL or file link."
       );
     }
 
     const res = await deliverWork(id, filtered);
-    if (!res.success) alert(res.error || "Failed to deliver");
+    if (!res.success) toast.error(res.error || "Failed to deliver");
     else {
+      toast.success("Work delivered successfully!");
       // clear deliverables (leave a single empty row)
       setDeliverables([{ type: "link", name: "", url: "", description: "" }]);
     }
@@ -108,44 +112,77 @@ const OrderDetailPage = () => {
 
   const handleRequestRevision = async () => {
     if (!revisionReason.trim())
-      return setError("Provide a reason for revision.");
+      return toast.error("Provide a reason for revision.");
+    
     const res = await requestRevision(id, revisionReason.trim());
-    if (!res.success) alert(res.error || "Failed to request revision");
-    else setRevisionReason("");
+    if (!res.success) toast.error(res.error || "Failed to request revision");
+    else {
+      toast.success("Revision requested!");
+      setRevisionReason("");
+    }
   };
 
   const handleComplete = async () => {
     const res = await completeOrder(id);
-    if (!res.success) alert(res.error || "Failed to mark completed");
+    if (!res.success) toast.error(res.error || "Failed to mark completed");
+    else toast.success("Order marked as completed!");
   };
 
   const handleCancel = async () => {
-    if (!cancelReason.trim()) return setError("Provide a reason to cancel.");
+    if (!cancelReason.trim()) return toast.error("Provide a reason to cancel.");
+    
     const res = await cancelOrder(id, cancelReason.trim());
-    if (!res.success) alert(res.error || "Failed to cancel order");
-    else setCancelReason("");
+    if (!res.success) toast.error(res.error || "Failed to cancel order");
+    else {
+      toast.success("Order cancelled");
+      setCancelReason("");
+    }
   };
 
   const handleDispute = async () => {
-    if (!disputeReason.trim()) return setError("Provide a dispute reason.");
+    if (!disputeReason.trim()) return toast.error("Provide a dispute reason.");
+    
     const res = await raiseDispute(id, disputeReason.trim());
-    if (!res.success) alert(res.error || "Failed to raise dispute");
-    else setDisputeReason("");
+    if (!res.success) toast.error(res.error || "Failed to raise dispute");
+    else {
+      toast.success("Dispute raised. Admins will review.");
+      setDisputeReason("");
+    }
   };
 
   const handleSendMessage = async () => {
-    if (!messageText.trim()) return setError("Message cannot be empty.");
-    const res = await addOrderMessage(id, messageText.trim(), []);
-    if (!res.success) alert(res.error || "Failed to send message");
-    else setMessageText("");
+    if (!messageText.trim()) return toast.error("Message cannot be empty.");
+    
+    if (isAdmin) {
+      try {
+        const res = await adminSendOrderMessage(id, messageText.trim());
+        if (res.data?.success) {
+          // Refresh order to get updated messages
+          fetchOrderById(id);
+          setMessageText("");
+        } else {
+          toast.error(res.data?.error || "Failed to send message");
+        }
+      } catch (err) {
+        toast.error(err?.response?.data?.error || "Failed to send message");
+      }
+    } else {
+      const res = await addOrderMessage(id, messageText.trim(), []);
+      if (!res.success) toast.error(res.error || "Failed to send message");
+      else setMessageText("");
+    }
   };
 
   const handleRate = async () => {
     if (rating < 1 || rating > 5)
-      return setError("Rating must be between 1 and 5");
+      return toast.error("Rating must be between 1 and 5");
+      
     const res = await rateOrder(id, { rating, review: reviewText.trim() });
-    if (!res.success) alert(res.error || "Failed to submit rating");
-    else setReviewText("");
+    if (!res.success) toast.error(res.error || "Failed to submit rating");
+    else {
+      toast.success("Rating submitted!");
+      setReviewText("");
+    }
   };
 
   // Deliverables UI helpers
@@ -235,11 +272,148 @@ const OrderDetailPage = () => {
                     Requirements from client
                   </h3>
                   <p className="text-xs text-slate-400 whitespace-pre-wrap">
-                    {currentOrder.requirements}
                   </p>
                 </>
               )}
             </section>
+
+            {/* Delivered Work */}
+            {currentOrder.deliveredWork?.length > 0 && (
+              <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+                <h2 className="text-sm font-semibold text-emerald-400">
+                  Delivered Work
+                </h2>
+                <div className="space-y-3">
+                  {currentOrder.deliveredWork.map((dw, idx) => (
+                    <div
+                      key={dw._id || idx}
+                      className="p-3 rounded-lg bg-slate-900/50 border border-emerald-500/20"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-slate-100">
+                            {dw.name || "Deliverable"}
+                          </p>
+                          {dw.description && (
+                            <p className="text-xs text-slate-400 mt-1">
+                              {dw.description}
+                            </p>
+                          )}
+                        </div>
+                        <span className="px-2 py-0.5 rounded text-[10px] uppercase font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                          {dw.type || "link"}
+                        </span>
+                      </div>
+                      {dw.url && (
+                        <a
+                          href={dw.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-block mt-3 text-xs text-blue-400 hover:text-blue-300 underline"
+                        >
+                          View / Download
+                        </a>
+                      )}
+                      <p className="text-[10px] text-slate-500 mt-2">
+                        Delivered on {new Date(dw.deliveredAt).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Revision History */}
+            {currentOrder.revisionRequests?.length > 0 && (
+              <section className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+                <h2 className="text-sm font-semibold text-amber-400">
+                  Revision History
+                </h2>
+                <div className="space-y-3">
+                  {currentOrder.revisionRequests.map((rev, idx) => (
+                    <div
+                      key={rev._id || idx}
+                      className="p-3 rounded-lg bg-slate-900/50 border border-amber-500/20"
+                    >
+                      <p className="text-sm text-slate-200">
+                        <span className="font-semibold text-amber-500 mr-2">
+                          Reason:
+                        </span>
+                        {rev.reason}
+                      </p>
+                      <p className="text-[10px] text-slate-500 mt-2">
+                        Requested on {new Date(rev.requestedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Cancellations & Disputes */}
+            {(currentOrder.cancellationReason || currentOrder.disputeReason) && (
+              <section className="rounded-2xl border border-red-500/30 bg-red-500/5 p-4 space-y-3">
+                {currentOrder.cancellationReason && (
+                  <div>
+                    <h2 className="text-sm font-semibold text-red-400 mb-1">
+                      Cancellation Reason
+                    </h2>
+                    <p className="text-xs text-slate-300">
+                      {currentOrder.cancellationReason}
+                    </p>
+                  </div>
+                )}
+                {currentOrder.disputeReason && (
+                  <div className={currentOrder.cancellationReason ? "pt-3 border-t border-red-500/20" : ""}>
+                    <h2 className="text-sm font-semibold text-red-400 mb-1">
+                      Dispute Reason
+                    </h2>
+                    <p className="text-xs text-slate-300">
+                      {currentOrder.disputeReason}
+                    </p>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Reviews / Feedback */}
+            {(currentOrder.clientRating || currentOrder.freelancerRating) && (
+              <section className="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-4">
+                <h2 className="text-sm font-semibold text-blue-400">
+                  Reviews & Feedback
+                </h2>
+                <div className="space-y-4">
+                  {currentOrder.clientRating && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-300">
+                        Client Review
+                      </p>
+                      <div className="flex items-center gap-1 text-amber-400 text-xs">
+                        {"★".repeat(currentOrder.clientRating.rating)}
+                        {"☆".repeat(5 - currentOrder.clientRating.rating)}
+                      </div>
+                      <p className="text-xs text-slate-300 italic">
+                        &quot;{currentOrder.clientRating.review || "No written review provided."}&quot;
+                      </p>
+                    </div>
+                  )}
+                  {currentOrder.freelancerRating && (
+                    <div className={currentOrder.clientRating ? "pt-4 border-t border-blue-500/20 space-y-1" : "space-y-1"}>
+                      <p className="text-xs font-semibold text-slate-300">
+                        Freelancer Feedback
+                      </p>
+                      <div className="flex items-center gap-1 text-amber-400 text-xs">
+                        {"★".repeat(currentOrder.freelancerRating.rating)}
+                        {"☆".repeat(5 - currentOrder.freelancerRating.rating)}
+                      </div>
+                      <p className="text-xs text-slate-300 italic">
+                        &quot;{currentOrder.freelancerRating.review || "No written review provided."}&quot;
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
 
             {/* Parties */}
             <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -576,18 +750,26 @@ const PartyCard = ({ title, user, highlight }) => {
 
 const MessageBubble = ({ msg, currentUserId }) => {
   const isMine = msg.senderId?._id === currentUserId;
+  const isAdminMsg = msg.senderId?.role === "admin";
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"} text-xs`}>
       <div
         className={`max-w-[80%] rounded-xl px-3 py-2 ${
-          isMine
+          isAdminMsg
+            ? "bg-amber-600/20 border border-amber-500/40 text-amber-100 rounded-bl-sm"
+            : isMine
             ? "bg-blue-600 text-white rounded-br-sm"
             : "bg-slate-800 text-slate-100 rounded-bl-sm"
         }`}
       >
-        {!isMine && (
-          <p className="text-[10px] text-slate-300 mb-0.5">
+        {(!isMine || isAdminMsg) && (
+          <p className="text-[10px] text-slate-300 mb-0.5 flex items-center gap-1">
             {msg.senderId?.name || "User"}
+            {isAdminMsg && (
+              <span className="bg-amber-500 text-black text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">
+                Admin
+              </span>
+            )}
           </p>
         )}
         <p className="whitespace-pre-wrap">{msg.content}</p>

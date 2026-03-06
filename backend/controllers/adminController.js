@@ -4,8 +4,10 @@ const Job = require('../models/Job');
 const Event = require('../models/Event');
 const Gig = require('../models/Gig');
 const Order = require('../models/Order');
+const DeletedUser = require('../models/DeletedUser');
 const Message = require('../models/Message');
 const Notification = require('../models/Notification');
+const { deleteUserAndCascade } = require('../utils/userCleanup');
 const notificationService = require('../services/notificationService');
 
 // ========== USER MANAGEMENT ==========
@@ -223,15 +225,16 @@ exports.deleteUser = async (req, res) => {
     if (activeOrders > 0) {
       return res.status(400).json({
         success: false,
-        error: 'Cannot delete user with active orders'
+        error: 'Cannot delete user with active orders. Please cancel or resolve them first.'
       });
     }
 
-    await User.findByIdAndDelete(id);
+    // Call the cascading utility
+    await deleteUserAndCascade(id, 'admin', 'Deleted by Administrator');
 
     res.json({
       success: true,
-      message: 'User deleted successfully'
+      message: 'User deleted and content safely archived'
     });
 
   } catch (err) {
@@ -239,6 +242,24 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to delete user'
+    });
+  }
+};
+
+// Get Deleted Users Archive
+exports.getDeletedUsers = async (req, res) => {
+  try {
+    const deletedUsers = await DeletedUser.find().sort({ deletedAt: -1 });
+    res.json({
+      success: true,
+      deletedUsers,
+      total: deletedUsers.length
+    });
+  } catch (err) {
+    console.error('Get deleted users error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch deleted users archive'
     });
   }
 };
@@ -483,6 +504,132 @@ exports.approveGig = async (req, res) => {
   }
 };
 
+// Reject gig
+exports.rejectGig = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const gig = await Gig.findById(id);
+
+    if (!gig) {
+      return res.status(404).json({
+        success: false,
+        error: 'Gig not found'
+      });
+    }
+
+    // Notify freelancer
+    await notificationService.createNotification({
+      userId: gig.createdBy,
+      type: 'gig_created',
+      title: 'Gig Rejected',
+      message: reason || `Your gig "${gig.title}" was rejected`,
+      relatedTo: { model: 'Gig', id: gig._id },
+      priority: 'high',
+      channels: { inApp: true, email: true }
+    });
+
+    await Gig.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: 'Gig rejected successfully'
+    });
+
+  } catch (err) {
+    console.error('Reject gig error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to reject gig'
+    });
+  }
+};
+
+// ========== DISPUTE RESOLUTION ==========
+
+// Get disputed orders
+exports.getDisputedOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ status: 'disputed' })
+      .populate('gigId', 'title category')
+      .populate('clientId', 'name email profilePicture')
+      .populate('freelancerId', 'name email profilePicture')
+      .populate('messages.senderId', 'name email profilePicture role')
+      .sort({ disputeRaisedAt: -1 });
+
+    res.json({
+      success: true,
+      orders,
+      total: orders.length
+    });
+
+  } catch (err) {
+    console.error('Get disputed orders error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch disputed orders'
+    });
+  }
+};
+
+// Admin add message to order
+exports.adminAddOrderMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Determine the sender logic for the generic Message schema / messages array
+    await order.addMessage(req.userId, content);
+
+    // Get the updated order to return
+    const updatedOrder = await Order.findById(id)
+      .populate('clientId', 'name email profilePicture')
+      .populate('freelancerId', 'name email profilePicture')
+      .populate('messages.senderId', 'name email profilePicture role');
+
+    // Notify both parties
+    await Promise.all([
+      notificationService.createNotification({
+        userId: order.clientId,
+        type: 'new_message',
+        title: 'New Admin Message',
+        message: `An admin sent a message regarding order #${order.orderNumber || order._id}`,
+        actionUrl: `/orders/${order._id}`
+      }),
+      notificationService.createNotification({
+        userId: order.freelancerId,
+        type: 'new_message',
+        title: 'New Admin Message',
+        message: `An admin sent a message regarding order #${order.orderNumber || order._id}`,
+        actionUrl: `/orders/${order._id}`
+      })
+    ]);
+
+    res.json({
+      success: true,
+      message: 'Message added',
+      order: updatedOrder
+    });
+
+  } catch (err) {
+    console.error('Admin add order message error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to add message'
+    });
+  }
+};
+
 // ========== PLATFORM ANALYTICS ==========
 
 exports.getDashboardStats = async (req, res) => {
@@ -502,6 +649,8 @@ exports.getDashboardStats = async (req, res) => {
       
       activeOrders,
       completedOrders,
+      disputedOrders,
+      deletedUsersCount,
       
       revenueData
     ] = await Promise.all([
@@ -525,6 +674,8 @@ exports.getDashboardStats = async (req, res) => {
         status: { $in: ['pending', 'in_progress', 'delivered'] }
       }),
       Order.countDocuments({ status: 'completed' }),
+      Order.countDocuments({ status: 'disputed' }),
+      DeletedUser.countDocuments(),
       
       Order.aggregate([
         { $match: { status: 'completed' } },
@@ -564,6 +715,8 @@ exports.getDashboardStats = async (req, res) => {
           jobs: pendingJobs,
           events: pendingEvents,
           gigs: pendingGigs,
+          disputedOrders,
+          deletedUsers: deletedUsersCount,
           total: pendingApprovals + pendingJobs + pendingEvents + pendingGigs
         },
         orders: {

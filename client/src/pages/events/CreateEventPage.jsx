@@ -129,9 +129,9 @@ const CreateEventPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
+    <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Create New Event</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Create New Event</h1>
 
         {error && (
           <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded mb-6">

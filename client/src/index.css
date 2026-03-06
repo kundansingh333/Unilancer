@@ -12,6 +12,7 @@ body {
   font-family: Inter, system-ui, sans-serif;
   color: #1E1F35;
   background-color: #F5F5F5;
+  overflow-x: hidden;
 }
 
 /* Remove default focus rings - we use Tailwind utilities */
@@ -20,4 +21,22 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
+}
+
+/* Prevent text overflow globally */
+h1, h2, h3, h4, h5, h6, p, span, a, td, th {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Tables: scroll horizontally on mobile instead of breaking layout */
+table {
+  word-break: normal;
+}
+
+/* Responsive input fields */
+@media (max-width: 640px) {
+  .input, input, select, textarea {
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
 }

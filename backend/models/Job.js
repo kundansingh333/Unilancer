@@ -174,8 +174,13 @@ const jobSchema = new mongoose.Schema({
         enum: ["applied", "shortlisted", "rejected", "accepted"],
         default: "applied",
       },
+      note: {
+        type: String,
+        maxlength: 1000,
+        default: "",
+      },
       resume: {
-        type: String, // URL to resume used for this application
+        type: String,
       },
       coverLetter: {
         type: String,

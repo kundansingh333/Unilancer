@@ -444,7 +444,7 @@ exports.getJobApplicants = async (req, res) => {
 exports.updateApplicationStatus = async (req, res) => {
   try {
     const { id, applicantId } = req.params;
-    const { status } = req.body;
+    const { status, note } = req.body;
 
     if (!["applied", "shortlisted", "rejected", "accepted"].includes(status)) {
       return res.status(400).json({
@@ -484,6 +484,7 @@ exports.updateApplicationStatus = async (req, res) => {
     }
 
     applicant.status = status;
+    applicant.note = note || "";
     applicant.updatedAt = Date.now();
 
     await job.save();
@@ -630,6 +631,7 @@ exports.getMyApplications = async (req, res) => {
         },
         application: {
           status: application.status,
+          note: application.note || "",
           appliedAt: application.appliedAt,
           updatedAt: application.updatedAt,
         },

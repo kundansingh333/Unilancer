@@ -261,4 +261,11 @@ router.get("/me", auth, authController.getCurrentUser);
  */
 router.post("/logout", auth, authController.logout);
 
+/**
+ * @route   DELETE /api/auth/me
+ * @desc    Delete the logged in user's account entirely
+ * @access  Private
+ */
+router.delete("/me", auth, authController.deleteMyAccount);
+
 module.exports = router;

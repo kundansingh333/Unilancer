@@ -31,17 +31,29 @@ const MyApplicationsPage = () => {
             <div
               key={i}
               onClick={() => navigate(`/jobs/${app.job._id}`)}
-              className="bg-slate-900 border border-slate-800 rounded p-4 cursor-pointer
-                 hover:bg-slate-800 transition"
+              className="bg-slate-900 border border-slate-800 rounded-xl p-4 cursor-pointer
+                 hover:bg-slate-800 transition space-y-2"
             >
-              <h2 className="font-semibold">{app.job.title}</h2>
-              <p className="text-xs text-slate-400">{app.job.company}</p>
-              <p className="text-sm mt-1">
-                Status:{" "}
-                <span className="capitalize text-blue-400">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold">{app.job.title}</h2>
+                  <p className="text-xs text-slate-400">{app.job.company}</p>
+                </div>
+                <span className={`capitalize text-xs px-2.5 py-1 rounded-full font-medium ${
+                  app.application.status === "accepted" ? "bg-emerald-600/20 text-emerald-400"
+                  : app.application.status === "rejected" ? "bg-red-600/20 text-red-400"
+                  : app.application.status === "shortlisted" ? "bg-blue-600/20 text-blue-400"
+                  : "bg-slate-700 text-slate-300"
+                }`}>
                   {app.application.status}
                 </span>
-              </p>
+              </div>
+              {app.application.note && (
+                <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 mt-2">
+                  <p className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mb-1">Recruiter Note</p>
+                  <p className="text-sm text-slate-200 italic">"{app.application.note}"</p>
+                </div>
+              )}
             </div>
           ))}
         </div>

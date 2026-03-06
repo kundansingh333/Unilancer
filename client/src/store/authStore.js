@@ -261,6 +261,25 @@ const useAuthStore = create((set, get) => ({
       return { success: false, error: message };
     }
   },
+
+  // ================= DELETE ACCOUNT =================
+  deleteMyAccount: async (password) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await api.delete("/auth/me", { data: { password } });
+      
+      // Cleanup local state
+      localStorage.removeItem("unilancer_token");
+      localStorage.removeItem("unilancer_user");
+      
+      set({ user: null, token: null, isLoading: false, error: null });
+      return { success: true, message: res.data?.message };
+    } catch (err) {
+      const message = err?.response?.data?.error || "Failed to delete account.";
+      set({ isLoading: false, error: message });
+      return { success: false, error: message };
+    }
+  },
 }));
 
 export default useAuthStore;

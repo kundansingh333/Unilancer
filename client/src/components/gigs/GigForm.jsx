@@ -1,5 +1,6 @@
-// src/components/gigs/GigForm.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { createGig, updateGig } from "../../api/gigsApi";
 
 const CATEGORIES = [
@@ -46,6 +47,7 @@ const GigForm = ({
     tags: (initialData.tags || []).join(", "),
   });
 
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -111,7 +113,14 @@ const GigForm = ({
         throw new Error(res.data?.error || "Failed to save gig");
       }
 
-      onSuccess?.(res.data.gig || null, res.data);
+      if (onSuccess) {
+        onSuccess(res.data.gig || null, res.data);
+      } else {
+        toast.success(
+          mode === "edit" ? "Gig updated successfully!" : "Gig created successfully!"
+        );
+        navigate("/my-gigs");
+      }
     } catch (err) {
       console.error("Gig form submit error:", err);
       setError(

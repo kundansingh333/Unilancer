@@ -35,6 +35,14 @@ exports.createOrder = async (req, res) => {
       });
     }
 
+    // Check for broken reference
+    if (!gig.createdBy) {
+      return res.status(404).json({
+        success: false,
+        error: "Gig creator not found",
+      });
+    }
+
     // Can't order own gig
     if (gig.createdBy._id.toString() === req.userId) {
       return res.status(400).json({
@@ -166,7 +174,7 @@ exports.getOrderById = async (req, res) => {
       .populate("gigId")
       .populate("clientId", "name email profilePicture phone")
       .populate("freelancerId", "name email profilePicture phone skills")
-      .populate("messages.senderId", "name profilePicture");
+      .populate("messages.senderId", "name profilePicture role");
 
     if (!order) {
       return res.status(404).json({
@@ -175,11 +183,12 @@ exports.getOrderById = async (req, res) => {
       });
     }
 
-    // Check authorization
-    if (
-      order.clientId._id.toString() !== req.userId &&
-      order.freelancerId._id.toString() !== req.userId
-    ) {
+    // Check authorization – admins can view any order
+    const isOrderClient = order.clientId._id.toString() === req.userId;
+    const isOrderFreelancer = order.freelancerId._id.toString() === req.userId;
+    const isAdmin = req.userRole === "admin";
+
+    if (!isOrderClient && !isOrderFreelancer && !isAdmin) {
       return res.status(403).json({
         success: false,
         error: "Not authorized to view this order",
@@ -189,8 +198,7 @@ exports.getOrderById = async (req, res) => {
     res.json({
       success: true,
       order,
-      userRole:
-        order.clientId._id.toString() === req.userId ? "client" : "freelancer",
+      userRole: isAdmin ? "admin" : isOrderClient ? "client" : "freelancer",
     });
   } catch (err) {
     console.error("Get order error:", err);
@@ -565,9 +573,17 @@ exports.addOrderMessage = async (req, res) => {
 
     await order.addMessage(req.userId, content, attachments);
 
+    // Re-fetch populated order so frontend gets updated messages
+    const updatedOrder = await Order.findById(id)
+      .populate("gigId")
+      .populate("clientId", "name email profilePicture phone")
+      .populate("freelancerId", "name email profilePicture phone skills")
+      .populate("messages.senderId", "name profilePicture role");
+
     res.json({
       success: true,
       message: "Message sent successfully",
+      order: updatedOrder,
     });
   } catch (err) {
     console.error("Add message error:", err);

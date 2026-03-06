@@ -35,6 +35,11 @@ import EventAttendancePage from "./pages/events/EventAttendancePage";
 import { Toaster } from "react-hot-toast";
 import EventRegistrationsPage from "./pages/events/EventRegistrationsPage";
 import AdminJobApprovalPage from "./pages/admin/AdminJobApprovalPage";
+import AdminUserApprovalPage from "./pages/admin/AdminUserApprovalPage";
+import AdminGigApprovalPage from "./pages/admin/AdminGigApprovalPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminDeletedUsersPage from "./pages/admin/AdminDeletedUsersPage";
+import AdminDisputedOrdersPage from "./pages/admin/AdminDisputedOrdersPage";
 import BookmarkedJobsPage from "./pages/jobs/BookmarkedJobsPage";
 import JobApplicantsPage from "./pages/jobs/JobApplicantsPage";
 import JobListPage from "./pages/jobs/JobListPage";
@@ -281,6 +286,46 @@ const App = () => {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminJobApprovalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/gigs/approvals"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminGigApprovalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users/approvals"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminUserApprovalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/deleted-users"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDeletedUsersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders/disputed"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDisputedOrdersPage />
               </ProtectedRoute>
             }
           />

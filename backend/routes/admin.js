@@ -130,6 +130,30 @@ router.get("/gigs/pending", adminAuth, adminController.getPendingGigs);
  */
 router.put("/gigs/:id/approve", adminAuth, adminController.approveGig);
 
+/**
+ * @route   PUT /api/admin/gigs/:id/reject
+ * @desc    Reject a gig
+ * @access  Admin
+ * @body    { reason }
+ */
+router.put("/gigs/:id/reject", adminAuth, adminController.rejectGig);
+
+// ========== DISPUTE RESOLUTION ==========
+
+/**
+ * @route   GET /api/admin/orders/disputed
+ * @desc    Get all disputed orders
+ * @access  Admin
+ */
+router.get("/orders/disputed", adminAuth, adminController.getDisputedOrders);
+
+/**
+ * @route   POST /api/admin/orders/:id/message
+ * @desc    Admin send message to an order
+ * @access  Admin
+ */
+router.post("/orders/:id/message", adminAuth, adminController.adminAddOrderMessage);
+
 // ========== FEATURED CONTENT ==========
 
 /**
@@ -157,5 +181,12 @@ router.put("/events/:id/feature", adminAuth, adminController.featureEvent);
  * @body    { title, message, targetRoles[], priority }
  */
 router.post("/announcement", adminAuth, adminController.sendAnnouncement);
+
+/**
+ * @route   GET /api/admin/deleted-users
+ * @desc    Get the archive of deleted users
+ * @access  Admin
+ */
+router.get("/deleted-users", adminAuth, adminController.getDeletedUsers);
 
 module.exports = router;

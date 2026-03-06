@@ -79,6 +79,8 @@ const RegisterPage = () => {
     if (result?.success) {
       toast.success("Account created successfully. Verify your email.");
       navigate("/verify-otp", { state: { email: form.email } });
+    } else {
+      toast.error(result?.error || error || "Registration failed. Please try again.");
     }
   };
 
@@ -128,11 +130,6 @@ const RegisterPage = () => {
             ))}
           </div>
 
-          {error && (
-            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-red-400 text-sm font-semibold">{error}</p>
-            </div>
-          )}
 
           {successMsg && (
             <div className="mb-6 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 backdrop-blur-sm">

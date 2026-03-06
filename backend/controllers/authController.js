@@ -1,5 +1,6 @@
 // backend/controllers/authController.js
 const User = require("../models/User");
+const { deleteUserAndCascade } = require("../utils/userCleanup");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
@@ -885,7 +886,59 @@ exports.resendVerification = async (req, res) => {
     console.error("Resend verification error:", err);
     res.status(500).json({
       success: false,
-      error: "Failed to send verification email",
+      error: "Failed to resend verification email",
+    });
+  }
+};
+
+// ========== DELETE OWN ACCOUNT ==========
+exports.deleteMyAccount = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Optional: Ask for password confirmation for security
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        error: "Please confirm your password to delete your account",
+      });
+    }
+
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        error: "Incorrect password",
+      });
+    }
+
+    // Process cascade delete
+    await deleteUserAndCascade(userId, "self", "User requested account deletion via Profile");
+
+    // Clear the cookie so they are logged out automatically
+    res.cookie("token", "none", {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
+
+    res.json({
+      success: true,
+      message: "Account and all associated content has been successfully deleted",
+    });
+  } catch (err) {
+    console.error("Delete my account error:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message || "An error occurred while deleting your account",
     });
   }
 };

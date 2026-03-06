@@ -7,15 +7,20 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   // Auth Store
-  const { user, loadUserFromToken } = useAuthStore();
+  const { user, loadUserFromToken, deleteMyAccount, logout } = useAuthStore();
 
   // Profile Store
   const { updateProfile, isSaving } = useProfileStore();
 
-  // Local State
   const [form, setForm] = useState(null);
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
+
+  // Delete Account State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // 1. Load user if not already in store
   useEffect(() => {
@@ -746,7 +751,7 @@ const ProfilePage = () => {
           </section>
 
           {/* SAVE BUTTON */}
-          <div className="flex justify-end">
+          <div className="flex justify-end border-b border-slate-800 pb-8">
             <button
               type="submit"
               disabled={isSaving}
@@ -756,7 +761,98 @@ const ProfilePage = () => {
             </button>
           </div>
         </form>
+
+        {/* DANGER ZONE */}
+        <section className="bg-slate-900/40 border border-red-500/20 rounded-2xl p-5 mt-8">
+          <h2 className="text-sm font-semibold text-red-400 mb-2">
+            Danger Zone
+          </h2>
+          <p className="text-xs text-slate-400 mb-4 max-w-2xl">
+            Permanently delete your account and all of your content (gigs, properties, active jobs, etc). This cannot be undone.
+          </p>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg text-sm font-medium transition-colors"
+          >
+            Delete Account
+          </button>
+        </section>
       </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-red-500/30 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <h3 className="text-lg font-bold text-red-400 mb-2">Delete Account</h3>
+            <p className="text-sm text-slate-300 mb-4">
+              This action is permanent and will delete all your settings, gigs, orders, and events immediately. Please confirm your password to proceed.
+            </p>
+
+            {deleteError && (
+              <div className="p-3 mb-4 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="block text-xs text-slate-400 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                className="w-full input border-red-500/20 focus:border-red-500/50"
+                placeholder="Enter your password"
+                disabled={isDeleting}
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteError("");
+                  setDeletePassword("");
+                }}
+                disabled={isDeleting}
+                className="px-4 py-2 text-sm text-slate-300 hover:text-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (!deletePassword) {
+                    setDeleteError("Password is required");
+                    return;
+                  }
+                  setIsDeleting(true);
+                  setDeleteError("");
+                  const res = await deleteMyAccount(deletePassword);
+                  setIsDeleting(false);
+                  
+                  if (res.success) {
+                    navigate("/login");
+                  } else {
+                    setDeleteError(res.error || "Failed to delete account");
+                  }
+                }}
+                disabled={isDeleting || !deletePassword}
+                className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Permanently Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
