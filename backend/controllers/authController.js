@@ -42,48 +42,31 @@ const generateToken = (userId, role) => {
 
 // backend/controllers/authController.js
 
-// ========== IMPROVED EMAIL CONFIGURATION ==========
-const transporter = nodemailer.createTransport({
-  service: "gmail", // ✅ Use 'service' instead of host/port
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-// ✅ Add verification on startup
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error("❌ SMTP Connection Error:", error);
-  } else {
-    console.log("✅ SMTP Server is ready to send emails");
-  }
-});
+// ========== IMPROVED EMAIL CONFIGURATION (RESEND) ==========
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ========== IMPROVED SEND EMAIL FUNCTION ==========
 const sendEmail = async (to, subject, html) => {
   try {
-    console.log("📧 Attempting to send email to:", to);
+    console.log("📧 Attempting to send email via Resend to:", to);
 
-    const info = await transporter.sendMail({
-      from: `"Unilancer" <${process.env.SMTP_USER}>`,
-      to,
-      subject,
-      html,
+    const { data, error } = await resend.emails.send({
+      from: "Unilancer <noreply@unilancer.online>", // Verified domain
+      to: [to],
+      subject: subject,
+      html: html,
     });
 
-    console.log("✅ Email sent successfully:", info.messageId);
-    console.log("📬 Preview URL:", nodemailer.getTestMessageUrl(info));
+    if (error) {
+       console.error("❌ Resend API Error:", error);
+       throw new Error(error.message);
+    }
 
-    return info;
+    console.log("✅ Email sent successfully via Resend:", data.id);
+    return data;
   } catch (err) {
     console.error("❌ Email sending failed:", err);
-    console.error("Error details:", {
-      code: err.code,
-      command: err.command,
-      response: err.response,
-      responseCode: err.responseCode,
-    });
     throw new Error(`Failed to send email: ${err.message}`);
   }
 };
@@ -211,7 +194,15 @@ exports.register = async (req, res) => {
       }
     `;
 
-    await sendEmail(email, "Verify Your Email - Unilancer", emailHtml);
+    try {
+      await sendEmail(email, "Verify Your Email - Unilancer", emailHtml);
+    } catch (emailError) {
+      // If email fails to send, delete the newly created user so they aren't stuck
+      await User.findByIdAndDelete(user._id);
+      throw new Error(
+        "Account created but failed to send verification email. Please check the server's email configuration."
+      );
+    }
 
     res.status(201).json({
       success: true,

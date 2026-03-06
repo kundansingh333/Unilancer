@@ -119,6 +119,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5001",
   "https://unilancer-frontend.vercel.app",
+  "https://unilancer.online",
+  "https://www.unilancer.online",
 ];
 
 // ✅ 2. Update Express CORS to use the list above
