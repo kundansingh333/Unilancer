@@ -922,17 +922,17 @@ exports.sendMessage = async (req, res) => {
       replyTo,
     } = req.body;
 
-    if (!content || content.trim().length === 0) {
+    if ((!content || content.trim().length === 0) && (!attachments || attachments.length === 0)) {
       return res
         .status(400)
-        .json({ success: false, error: "Message content is required" });
+        .json({ success: false, error: "Message content or attachment is required" });
     }
 
     // 1. Save the Message
     const message = new Message({
       senderId: req.userId,
       receiverId,
-      content: content.trim(),
+      content: content ? content.trim() : "",
       messageType,
       attachments,
       relatedTo,

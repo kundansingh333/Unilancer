@@ -9,8 +9,10 @@ const useMessageStore = create((set, get) => ({
   unreadCount: 0,
 
   typingUsers: {}, // { userId: true }
+  onlineUsers: [], // Add online users tracking
 
   activeChatUser: null,
+  activeChatUserDetails: null,
 
   isLoading: false,
   error: null,
@@ -53,6 +55,7 @@ const useMessageStore = create((set, get) => ({
       set({
         messages: sortedMessages,
         activeChatUser: otherUserId,
+        activeChatUserDetails: res.data.otherUser || null,
         isLoading: false,
       });
     } catch (err) {
@@ -71,24 +74,6 @@ const useMessageStore = create((set, get) => ({
   },
 
   /* ================= CHAT ================= */
-
-  fetchMessages: async (otherUserId, params = {}) => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await messageApi.getConversationWithUser(otherUserId, params);
-
-      set({
-        messages: res.data.messages || res.data,
-        activeChatUser: otherUserId,
-        isLoading: false,
-      });
-    } catch (err) {
-      set({
-        error: err.response?.data?.error || "Failed to load messages",
-        isLoading: false,
-      });
-    }
-  },
 
   // sendMessage: async (data) => {
   //   try {
@@ -114,6 +99,7 @@ const useMessageStore = create((set, get) => ({
       senderId: { _id: "me" },
       receiverId: data.receiverId,
       content: data.content,
+      attachments: data.attachments || [],
       createdAt: new Date().toISOString(),
       timeAgo: "just now",
       isRead: false,
@@ -273,6 +259,12 @@ const useMessageStore = create((set, get) => ({
       socket.emit("join", userId);
     }
 
+    // Handle online users
+    socket.off("getOnlineUsers");
+    socket.on("getOnlineUsers", (users) => {
+      set({ onlineUsers: users });
+    });
+
     socket.off("new-message");
     socket.on("new-message", (message) => {
       const { activeChatUser } = get();
@@ -309,11 +301,12 @@ const useMessageStore = create((set, get) => ({
   disconnectSocket: () => {
     if (socket.connected) {
       socket.disconnect();
+      set({ onlineUsers: [] });
     }
   },
 
-  sendTyping: (receiverId, isTyping) => {
-    socket.emit("typing", { receiverId, isTyping });
+  sendTyping: (receiverId, userId, isTyping) => {
+    socket.emit("typing", { receiverId, userId, isTyping });
   },
 }));
 

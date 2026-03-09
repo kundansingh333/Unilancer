@@ -33,11 +33,11 @@ import api from "./client";
 
 export const uploadImage = async (file) => {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file); // ✅ Match Multer .single("file")
 
-  const res = await api.post("/upload/image", formData, {
+  const res = await api.post("/upload/file", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  return res.data.url; // ✅ MUST return URL
+  return res.data.url; 
 };

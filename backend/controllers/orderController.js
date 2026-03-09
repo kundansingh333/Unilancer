@@ -580,6 +580,14 @@ exports.addOrderMessage = async (req, res) => {
       .populate("freelancerId", "name email profilePicture phone skills")
       .populate("messages.senderId", "name profilePicture role");
 
+    // Real-time broadcast
+    if (global.io) {
+      global.io.to(`order_${id}`).emit("newMessage", {
+        orderId: id,
+        message: updatedOrder.messages[updatedOrder.messages.length - 1]
+      });
+    }
+
     res.json({
       success: true,
       message: "Message sent successfully",

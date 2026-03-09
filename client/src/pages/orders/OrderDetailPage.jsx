@@ -4,6 +4,10 @@ import { toast } from "react-hot-toast";
 import useOrderStore from "../../store/orderStore";
 import useAuthStore from "../../store/authStore";
 import { adminSendOrderMessage } from "../../api/adminApi";
+import { uploadImage } from "../../api/uploadApi"; // We'll use this for file uploads too
+import io from "socket.io-client";
+import EmojiPicker from "emoji-picker-react";
+import { Paperclip, Smile, X, Video, Phone } from "lucide-react";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
@@ -31,14 +35,122 @@ const OrderDetailPage = () => {
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
 
-  // Deliverables list for freelancer
   const [deliverables, setDeliverables] = useState([
     { type: "link", name: "", url: "", description: "" },
   ]);
 
   const navigate = useNavigate();
 
+  // Socket & Real-time Chat States
+  const [socket, setSocket] = useState(null);
+  const [typingUser, setTypingUser] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Initialize socket connection
+  useEffect(() => {
+    if (!user || !id) return;
+    const newSocket = io(import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5001", {
+      withCredentials: true,
+    });
+
+    setSocket(newSocket);
+    newSocket.emit("joinOrder", id);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [user, id]);
+
+  // Handle incoming real-time messages and typing events
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("newMessage", (data) => {
+      if (data.orderId === id) {
+        // Optimistically update the store's currentOrder to include this new message
+        useOrderStore.setState((state) => {
+          if (!state.currentOrder) return state;
+          
+          // Check if message already exists to prevent duplicates
+          const exists = state.currentOrder.messages.find(m => m._id === data.message._id);
+          if (exists) return state;
+
+          return {
+            ...state,
+            currentOrder: {
+              ...state.currentOrder,
+              messages: [...state.currentOrder.messages, data.message],
+            },
+          };
+        });
+        
+        // Clear typing indicator when a message arrives
+        setTypingUser("");
+      }
+    });
+
+    socket.on("orderTyping", (data) => {
+      if (data.isTyping && data.userId !== user?._id) {
+        setTypingUser(data.userName);
+      } else {
+        setTypingUser("");
+      }
+    });
+
+    return () => {
+      socket.off("newMessage");
+      socket.off("orderTyping");
+    };
+  }, [socket, id, user]);
+
+  // Debounced typing handler
+  useEffect(() => {
+    if (!socket || !id || !user) return;
+    const typingTimeout = setTimeout(() => {
+      socket.emit("orderTyping", { orderId: id, userId: user._id, userName: user.name, isTyping: false });
+    }, 2000);
+
+    return () => clearTimeout(typingTimeout);
+  }, [messageText, socket, id, user]);
+
+  const handleMessageTyping = (e) => {
+    setMessageText(e.target.value);
+    if (socket) {
+      socket.emit("orderTyping", { orderId: id, userId: user._id, userName: user.name, isTyping: true });
+    }
+  };
+
+  const handleEmojiClick = (emojiObj) => {
+    setMessageText((prev) => prev + emojiObj.emoji);
+  };
+
   //messages
+  const initiateCall = (type) => {
+    if (!currentOrder) return;
+    
+    // Determine who to call
+    const otherUserId =
+      currentOrder.clientId?._id === user?._id
+        ? currentOrder.freelancerId?._id
+        : currentOrder.clientId?._id;
+
+    if (!otherUserId) return;
+
+    const roomId = `order-${id}`;
+    
+    if (socket) {
+      socket.emit("callUser", {
+        userToCall: otherUserId,
+        signalData: roomId,
+        from: user?._id,
+        name: user?.name,
+      });
+    }
+    navigate(`/call/${roomId}`);
+  };
+
   const handleOpenChat = () => {
     if (!currentOrder) return;
 
@@ -151,11 +263,30 @@ const OrderDetailPage = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!messageText.trim()) return toast.error("Message cannot be empty.");
+    if (!messageText.trim() && !selectedFile) return toast.error("Message cannot be empty.");
     
+    let attachmentUrl = null;
+    let attachmentType = null;
+
+    if (selectedFile) {
+      setIsUploading(true);
+      try {
+        attachmentUrl = await uploadImage(selectedFile);
+        attachmentType = selectedFile.type.startsWith("image/") ? "image" 
+          : selectedFile.type.startsWith("video/") ? "video" 
+          : selectedFile.type.startsWith("audio/") ? "audio" : "file";
+      } catch (err) {
+        setIsUploading(false);
+        return toast.error("Failed to upload file");
+      }
+      setIsUploading(false);
+    }
+    
+    const attachments = attachmentUrl ? [{ url: attachmentUrl, type: attachmentType }] : [];
+
     if (isAdmin) {
       try {
-        const res = await adminSendOrderMessage(id, messageText.trim());
+        const res = await adminSendOrderMessage(id, messageText.trim(), attachments);
         if (res.data?.success) {
           // Refresh order to get updated messages
           fetchOrderById(id);
@@ -167,9 +298,13 @@ const OrderDetailPage = () => {
         toast.error(err?.response?.data?.error || "Failed to send message");
       }
     } else {
-      const res = await addOrderMessage(id, messageText.trim(), []);
+      const res = await addOrderMessage(id, messageText.trim(), attachments);
       if (!res.success) toast.error(res.error || "Failed to send message");
-      else setMessageText("");
+      else {
+        setMessageText("");
+        setSelectedFile(null);
+        setShowEmojiPicker(false);
+      }
     }
   };
 
@@ -440,11 +575,17 @@ const OrderDetailPage = () => {
                 </span>
               </div> */}
 
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-slate-200">
-                  Messages
-                </h2>
-
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-2">
+                <div className="flex items-center gap-3">
+                   <h2 className="text-sm font-semibold text-slate-200">
+                    Order Chat
+                   </h2>
+                   {typingUser && (
+                     <span className="text-xs text-blue-400 italic animate-pulse">
+                       {typingUser} is typing...
+                     </span>
+                   )}
+                </div>
                 <button
                   onClick={handleOpenChat}
                   className="text-xs text-blue-400 hover:underline"
@@ -453,7 +594,50 @@ const OrderDetailPage = () => {
                 </button>
               </div>
 
-              <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
+              {/* Chat Avatars Header */}
+              <div className="flex justify-between items-center bg-slate-900/40 p-2 rounded-lg border border-slate-800/50 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center">
+                    {currentOrder.clientId?.profilePicture ? 
+                      <img src={currentOrder.clientId.profilePicture} alt="Client" className="w-full h-full object-cover" /> 
+                      : <span className="text-[10px]">{currentOrder.clientId?.name?.[0]?.toUpperCase()}</span>}
+                  </div>
+                  <span className="text-xs text-slate-300">Client</span>
+                </div>
+                <div className="flex flex-col items-center">
+                   <span className="text-[10px] text-slate-500">vs</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-300">Freelancer</span>
+                  <div className="h-6 w-6 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center">
+                    {currentOrder.freelancerId?.profilePicture ? (
+                      <img src={currentOrder.freelancerId.profilePicture} alt="Freelancer" className="w-full h-full object-cover" /> 
+                    ) : (
+                      <span className="text-[10px]">{currentOrder.freelancerId?.name?.[0]?.toUpperCase()}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* CALL ACTION BUTTONS */}
+              {user?._id === currentOrder.clientId?._id || user?._id === currentOrder.freelancerId?._id ? (
+                <div className="flex items-center justify-center gap-4 mt-2 mb-3 pb-3 border-b border-slate-800/50">
+                  <button 
+                    onClick={() => initiateCall('voice')}
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full hover:bg-slate-800 text-slate-300 hover:text-green-400 transition-colors bg-slate-800/50 border border-slate-700/50 text-xs font-medium"
+                  >
+                    <Phone size={14} /> Voice Call
+                  </button>
+                  <button 
+                    onClick={() => initiateCall('video')}
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full hover:bg-slate-800 text-slate-300 hover:text-blue-400 transition-colors bg-slate-800/50 border border-slate-700/50 text-xs font-medium"
+                  >
+                    <Video size={14} /> Video Call
+                  </button>
+                </div>
+              ) : null}
+
+              <div className="max-h-64 overflow-y-auto space-y-3 pr-1 flex flex-col">
                 {currentOrder.messages && currentOrder.messages.length > 0 ? (
                   currentOrder.messages.map((msg) => (
                     <MessageBubble
@@ -463,24 +647,60 @@ const OrderDetailPage = () => {
                     />
                   ))
                 ) : (
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 text-center my-4">
                     No messages yet. Start the conversation.
                   </p>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+              {/* File preview */}
+              {selectedFile && (
+                <div className="mt-2 flex items-center justify-between bg-slate-800 p-2 rounded-lg text-xs text-slate-300">
+                  <span className="truncate max-w-[80%]">{selectedFile.name}</span>
+                  <button onClick={() => setSelectedFile(null)} className="text-rose-400 hover:text-rose-300">
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
+              {/* Emoji Picker */}
+              {showEmojiPicker && (
+                <div className="absolute z-10 bottom-24 right-4 shadow-xl">
+                  <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" />
+                </div>
+              )}
+
+              <div className="relative flex items-center gap-2 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className="text-slate-400 hover:text-yellow-400 transition-colors"
+                >
+                  <Smile size={18} />
+                </button>
+                
+                <label className="cursor-pointer text-slate-400 hover:text-blue-400 transition-colors">
+                  <Paperclip size={18} />
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                  />
+                </label>
+
                 <input
                   className="flex-1 rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="Type a message..."
                   value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
+                  onChange={handleMessageTyping}
+                  onKeyDown={(e) => e.key === "Enter" && !isUploading && handleSendMessage()}
                 />
                 <button
                   onClick={handleSendMessage}
-                  className="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white"
+                  disabled={isUploading}
+                  className="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-xs font-medium text-white transition-colors"
                 >
-                  Send
+                  {isUploading ? "Sending..." : "Send"}
                 </button>
               </div>
             </section>
@@ -754,7 +974,7 @@ const MessageBubble = ({ msg, currentUserId }) => {
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"} text-xs`}>
       <div
-        className={`max-w-[80%] rounded-xl px-3 py-2 ${
+        className={`max-w-[80%] rounded-xl px-3 py-2 relative flex flex-col ${
           isAdminMsg
             ? "bg-amber-600/20 border border-amber-500/40 text-amber-100 rounded-bl-sm"
             : isMine
@@ -762,19 +982,48 @@ const MessageBubble = ({ msg, currentUserId }) => {
             : "bg-slate-800 text-slate-100 rounded-bl-sm"
         }`}
       >
-        {(!isMine || isAdminMsg) && (
-          <p className="text-[10px] text-slate-300 mb-0.5 flex items-center gap-1">
-            {msg.senderId?.name || "User"}
-            {isAdminMsg && (
-              <span className="bg-amber-500 text-black text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">
-                Admin
-              </span>
-            )}
-          </p>
+        <div className="flex items-center gap-2 mb-1">
+          {msg.senderId?.profilePicture && (
+            <img 
+              src={msg.senderId.profilePicture} 
+              alt="Avatar" 
+              className="w-4 h-4 rounded-full object-cover"
+            />
+          )}
+          {(!isMine || isAdminMsg) && (
+            <p className="text-[10px] text-slate-300 font-semibold flex items-center gap-1">
+              {msg.senderId?.name || "User"}
+              {isAdminMsg && (
+                <span className="bg-amber-500 text-black text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">
+                  Admin
+                </span>
+              )}
+            </p>
+          )}
+        </div>
+        
+        {msg.attachments && msg.attachments.length > 0 && (
+          <div className="mb-2 space-y-2">
+            {msg.attachments.map((file, i) => {
+              if (file.type === "image") {
+                return <img key={i} src={file.url} alt="attachment" className="rounded-lg max-h-32 object-cover border border-slate-700/50" />
+              } else if (file.type === "video") {
+                return <video key={i} src={file.url} controls className="rounded-lg max-h-32 border border-slate-700/50" />
+              } else if (file.type === "audio") {
+                return <audio key={i} src={file.url} controls className="max-w-[150px] scale-75 origin-left" />
+              }
+              return (
+                <a key={i} href={file.url} target="_blank" rel="noreferrer" className="text-[10px] underline flex gap-1 items-center bg-black/20 p-1.5 rounded">
+                  📎 Attached file
+                </a>
+              )
+            })}
+          </div>
         )}
-        <p className="whitespace-pre-wrap">{msg.content}</p>
-        <p className="text-[9px] opacity-70 mt-1">
-          {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString() : ""}
+
+        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+        <p className={`text-[9px] mt-1 ${isMine ? "text-blue-200" : "text-slate-500"} self-end`}>
+          {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
         </p>
       </div>
     </div>

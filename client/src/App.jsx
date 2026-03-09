@@ -54,6 +54,8 @@ import useAuthStore from "./store/authStore";
 import useMessageStore from "./store/messageStore";
 import ConversationsPage from "./pages/message/ConversationsPage";
 import ChatPage from "./pages/message/ChatPage";
+import CallRoom from "./pages/message/CallRoom";
+import IncomingCallModal from "./components/common/IncomingCallModal";
 
 // import OrganizedEventsPage from "./pages/events/OrganizedEventsPage";
 // import RegisteredEventsPage from "./pages/events/RegisteredEventsPage";
@@ -92,6 +94,7 @@ const App = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <div className="min-h-screen bg-slate-950 text-white">
         <Navbar />
+        <IncomingCallModal />
 
         <Routes>
           {/* ---------- PUBLIC ROUTES ---------- */}

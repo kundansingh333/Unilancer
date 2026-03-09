@@ -185,20 +185,69 @@ const io = new Server(server, {
 
 global.io = io;
 
+const userSocketMap = {}; // { userId: socketId }
+
 io.on("connection", (socket) => {
   console.log("🔌 Socket connected:", socket.id);
 
   socket.on("join", (userId) => {
     socket.join(userId);
-    console.log(`✅ User ${userId} joined room`);
+    if (userId) {
+      userSocketMap[userId] = socket.id;
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));
+      console.log(`✅ User ${userId} joined room`);
+    }
   });
 
+  // Join order room for real-time chat
+  socket.on("joinOrder", (orderId) => {
+    socket.join(`order_${orderId}`);
+    console.log(`✅ Socket ${socket.id} joined order room: order_${orderId}`);
+  });
+
+  // Typing indicator to a specific receiver (existing logic)
   socket.on("typing", ({ receiverId, userId, isTyping }) => {
     io.to(receiverId).emit("typing", { userId, isTyping });
   });
 
+  // Typing indicator broadcast to the entire order room
+  socket.on("orderTyping", ({ orderId, userId, userName, isTyping }) => {
+    // We broadcast to the room so the sender doesn't receive their own typing event
+    socket.to(`order_${orderId}`).emit("orderTyping", { userId, userName, isTyping });
+  });
+
+  // ================= CALL SIGNALING =================
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    const targetSocket = userSocketMap[userToCall];
+    if (targetSocket) {
+      io.to(targetSocket).emit("callUser", { signal: signalData, from, name });
+    }
+  });
+
+  socket.on("answerCall", (data) => {
+    const targetSocket = userSocketMap[data.to];
+    if (targetSocket) {
+      io.to(targetSocket).emit("callAccepted", data.signal);
+    }
+  });
+
+  socket.on("rejectCall", (data) => {
+    const targetSocket = userSocketMap[data.to];
+    if (targetSocket) {
+      io.to(targetSocket).emit("callRejected");
+    }
+  });
+  // ==================================================
+
   socket.on("disconnect", () => {
     console.log("❌ Socket disconnected:", socket.id);
+    for (const [userId, sId] of Object.entries(userSocketMap)) {
+      if (sId === socket.id) {
+        delete userSocketMap[userId];
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
+        break;
+      }
+    }
   });
 });
 

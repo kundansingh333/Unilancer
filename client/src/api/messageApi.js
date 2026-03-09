@@ -26,6 +26,7 @@ export const sendMessage = (data) => {
   return api.post("/messages", {
     receiverId: data.receiverId,
     content: data.content,
+    attachments: data.attachments || [],
   });
 };
 

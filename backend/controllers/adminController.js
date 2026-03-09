@@ -593,9 +593,18 @@ exports.adminAddOrderMessage = async (req, res) => {
 
     // Get the updated order to return
     const updatedOrder = await Order.findById(id)
+      .populate('gigId')
       .populate('clientId', 'name email profilePicture')
-      .populate('freelancerId', 'name email profilePicture')
+      .populate('freelancerId', 'name email profilePicture phone skills')
       .populate('messages.senderId', 'name email profilePicture role');
+
+    // Real-time broadcast
+    if (global.io) {
+      global.io.to(`order_${id}`).emit("newMessage", {
+        orderId: id,
+        message: updatedOrder.messages[updatedOrder.messages.length - 1]
+      });
+    }
 
     // Notify both parties
     await Promise.all([

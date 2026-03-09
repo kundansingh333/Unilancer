@@ -12,8 +12,10 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.17",
+    "@zegocloud/zego-uikit-prebuilt": "^2.17.2",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
+    "emoji-picker-react": "^4.18.0",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
