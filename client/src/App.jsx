@@ -364,6 +364,14 @@ const App = () => {
           {/* MESSAGES */}
           <Route path="/messages" element={<ConversationsPage />} />
           <Route path="/messages/:otherUserId" element={<ChatPage />} />
+          <Route
+            path="/call/:roomId"
+            element={
+              <ProtectedRoute>
+                <CallRoom />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>

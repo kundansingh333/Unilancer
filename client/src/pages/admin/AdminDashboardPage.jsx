@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAdminStore from "../../store/adminStore";
 import useAuthStore from "../../store/authStore";
+import { LogOut } from "lucide-react";
 
 const AdminDashboardPage = () => {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
   const { stats, loading, error, loadDashboardStats } = useAdminStore();
 
   useEffect(() => {
@@ -24,13 +26,24 @@ const AdminDashboardPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
-            Admin Dashboard
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Platform overview, analytics, and moderation queues.
-          </p>
+        <div className="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Platform overview, analytics, and moderation queues.
+            </p>
+          </div>
+          <button 
+            onClick={async () => {
+              await logout();
+              navigate("/");
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg hover:bg-rose-500 hover:text-white transition-colors text-sm font-medium"
+          >
+            <LogOut size={16} /> Logout
+          </button>
         </div>
 
         {loading && <p className="text-slate-400">Loading dashboard analytics...</p>}

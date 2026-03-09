@@ -72,6 +72,16 @@ const Navbar = () => {
               Create Event
             </Link>
           )}
+
+          {/* Logout (Main Nav Link Style) */}
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium whitespace-nowrap text-slate-400 hover:text-rose-400 transition-colors hidden lg:block"
+            >
+              Logout
+            </button>
+          )}
         </div>
 
         {/* RIGHT: Auth & Actions */}
@@ -94,7 +104,7 @@ const Navbar = () => {
           {user && (
             <>
               {/* Dashboard */}
-              <Link to="/dashboard" className="hidden md:block">
+              <Link to={user.role === "admin" ? "/admin/dashboard" : "/dashboard"} className="hidden md:block">
                 <Button variant="ghost" size="sm">
                   Dashboard
                 </Button>
@@ -197,14 +207,24 @@ const Navbar = () => {
               </Link>
             )}
 
+            {/* Logout Mobile Link */}
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="w-full text-left block px-4 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:bg-slate-800/50 transition-colors"
+              >
+                Logout
+              </button>
+            )}
+
             {/* Context/Auth Links in mobile menu */}
             {user && (
               <>
                 <Link
-                  to="/dashboard"
+                  to={user.role === "admin" ? "/admin/dashboard" : "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    location.pathname === "/dashboard"
+                    location.pathname === "/dashboard" || location.pathname === "/admin/dashboard"
                       ? "text-blue-400 bg-slate-800/50"
                       : "text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
                   }`}
@@ -222,12 +242,6 @@ const Navbar = () => {
                 >
                   Profile
                 </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left block px-4 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:bg-slate-800/50 transition-colors mt-1"
-                >
-                  Logout
-                </button>
               </>
             )}
 
