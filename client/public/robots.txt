@@ -1,0 +1,16 @@
+# Unilancer — robots.txt
+# https://unilancer.online
+
+User-agent: *
+Allow: /
+
+# Block authenticated / private pages
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /orders
+Disallow: /messages
+Disallow: /call/
+
+# Sitemap
+Sitemap: https://unilancer.online/sitemap.xml

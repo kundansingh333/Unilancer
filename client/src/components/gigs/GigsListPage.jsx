@@ -1,6 +1,7 @@
 // src/pages/gigs/GigsListPage.jsx
 import { useEffect, useState } from "react";
 import { fetchGigs } from "../../api/gigsApi";
+import SEO from "../SEO";
 import GigCard from "../../components/gigs/GigCard";
 
 const GigsListPage = () => {
@@ -69,6 +70,15 @@ const GigsListPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <SEO
+        title="Browse Freelance Gigs"
+        description="Explore freelance gigs offered by university students and alumni. Find web development, design, content writing, and more services on Unilancer."
+        path="/gigs"
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Gigs", path: "/gigs" },
+        ]}
+      />
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
           <div>

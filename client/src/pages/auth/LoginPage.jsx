@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/logo.webp";
+import SEO from "../../components/SEO";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -28,6 +29,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-50 selection:bg-blue-500/30 px-4 py-12 relative overflow-hidden">
+      <SEO
+        title="Login"
+        description="Sign in to your Unilancer account. Access gigs, jobs, events, and connect with student freelancers."
+        path="/login"
+        noIndex={true}
+      />
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-tr from-blue-500/10 to-purple-500/10 blur-3xl -z-10" />
       

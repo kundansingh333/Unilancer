@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/logo.webp";
+import SEO from "../../components/SEO";
 
 const ROLES = ["student", "alumni", "faculty"];
 
 const RegisterPage = () => {
+  // ... (all the existing state and handlers remain unchanged)
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -90,6 +92,11 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-50 selection:bg-blue-500/30 px-4 py-12 relative overflow-hidden">
+      <SEO
+        title="Sign Up"
+        description="Create your free Unilancer account. Join as a student, alumni, or faculty member and start freelancing on campus."
+        path="/register"
+      />
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-tr from-blue-500/10 to-purple-500/10 blur-3xl -z-10" />
       

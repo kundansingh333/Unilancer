@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useEventStore from "../../store/eventStore";
 import useAuthStore from "../../store/authStore";
+import SEO from "../../components/SEO";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EventDetailPage = () => {
   const { id } = useParams();
@@ -65,6 +67,17 @@ const EventDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
+      <SEO
+        title={event.title}
+        description={event.description?.slice(0, 160) || `${event.title} — ${event.eventType} on Unilancer`}
+        path={`/events/${id}`}
+        image={event.eventImage || undefined}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Events", path: "/events" },
+          { name: event.title, path: `/events/${id}` },
+        ]}
+      />
       {/* EVENT BANNER */}
       <div className="w-full h-40 sm:h-60">
         <img
@@ -75,6 +88,13 @@ const EventDetailPage = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        <Breadcrumbs
+          items={[
+            { label: "Home", to: "/" },
+            { label: "Events", to: "/events" },
+            { label: event.title },
+          ]}
+        />
         {/* TITLE */}
         <h1 className="text-2xl sm:text-3xl font-semibold">{event.title}</h1>
 

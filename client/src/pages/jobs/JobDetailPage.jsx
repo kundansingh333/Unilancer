@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/client";
 import useAuthStore from "../../store/authStore";
 import BookmarkButton from "./BookmarkButton";
+import SEO from "../../components/SEO";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const JobDetailPage = () => {
   const { id } = useParams();
@@ -52,7 +54,24 @@ const JobDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <SEO
+        title={job.title}
+        description={job.description?.slice(0, 160) || `${job.title} at ${job.company} — Job on Unilancer`}
+        path={`/jobs/${id}`}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Jobs", path: "/jobs" },
+          { name: job.title, path: `/jobs/${id}` },
+        ]}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <Breadcrumbs
+          items={[
+            { label: "Home", to: "/" },
+            { label: "Jobs", to: "/jobs" },
+            { label: job.title },
+          ]}
+        />
         <header>
           <h1 className="text-xl sm:text-2xl font-semibold">{job.title}</h1>
           <p className="text-slate-400">{job.company}</p>

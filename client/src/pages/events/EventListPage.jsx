@@ -4,6 +4,7 @@ import useEventStore from "../../store/eventStore";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
 import { useDebounce } from "../../hooks/useDebounce";
+import SEO from "../../components/SEO";
 
 const EventListPage = () => {
   const navigate = useNavigate();
@@ -51,6 +52,15 @@ const EventListPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <SEO
+        title="Campus Events"
+        description="Discover university events, hackathons, workshops, tech talks, and competitions on Unilancer. Stay updated with campus activities and networking opportunities."
+        path="/events"
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Events", path: "/events" },
+        ]}
+      />
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {/* HEADER */}
         <header>

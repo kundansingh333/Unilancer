@@ -31,13 +31,37 @@ const HeroSection = () => {
           <div className="flex flex-wrap gap-4">
             <Link to="/register">
               <button className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-blue-600/20 transition-all active:scale-95">
-                Get Started
+                Get Started Free
               </button>
             </Link>
             <Link to="/jobs">
               <button className="bg-transparent border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600 font-medium px-5 py-2.5 rounded-lg transition-all">
-                Browse Jobs
+                Find Student Developer Jobs
               </button>
+            </Link>
+          </div>
+
+          {/* SEO-rich internal links section */}
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link
+              to="/gigs"
+              className="text-blue-400 hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
+            >
+              Browse Freelance Gigs →
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link
+              to="/jobs"
+              className="text-blue-400 hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
+            >
+              Hire Student Developers →
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link
+              to="/events"
+              className="text-blue-400 hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
+            >
+              Explore Campus Events →
             </Link>
           </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import api from "../../api/client";
+import SEO from "../../components/SEO";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const JobListPage = () => {
@@ -49,6 +50,15 @@ const JobListPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <SEO
+        title="Browse Jobs"
+        description="Discover internship and full-time job opportunities for university students and alumni. Find student developer jobs, design roles, and more on Unilancer."
+        path="/jobs"
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Jobs", path: "/jobs" },
+        ]}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <header className="flex items-center justify-between">
           <div>

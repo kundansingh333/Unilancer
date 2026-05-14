@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="flex items-center gap-3">
               <img
                 src={metaLOGO}
-                alt="Unilancer"
+                alt="Unilancer Logo"
                 className="h-10 w-10 rounded-lg"
               />
               <div>
@@ -27,38 +27,38 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-sm text-gray-400">
-              The ultimate platform for university students to find and offer freelance services.
+              The ultimate platform for university students to find and offer freelance services. Hire student developers, designers, and content creators.
             </p>
           </div>
 
-          {/* Product */}
-          <div className="flex flex-col gap-3">
-            <h4 className="font-semibold text-white text-sm">Product</h4>
-            <div className="space-y-2 text-sm">
-              <Link to="/jobs" className="text-gray-400 hover:text-accent">Jobs</Link>
-              <Link to="/gigs" className="text-gray-400 hover:text-accent">Gigs</Link>
-              <Link to="/events" className="text-gray-400 hover:text-accent">Events</Link>
+          {/* Explore - SEO-descriptive links */}
+          <nav aria-label="Explore" className="flex flex-col gap-3">
+            <h4 className="font-semibold text-white text-sm">Explore</h4>
+            <div className="flex flex-col space-y-2 text-sm">
+              <Link to="/gigs" className="text-gray-400 hover:text-accent transition-colors">Browse Freelance Gigs</Link>
+              <Link to="/jobs" className="text-gray-400 hover:text-accent transition-colors">Find Student Developer Jobs</Link>
+              <Link to="/events" className="text-gray-400 hover:text-accent transition-colors">Campus Events & Workshops</Link>
             </div>
-          </div>
+          </nav>
 
           {/* Company */}
-          <div className="flex flex-col gap-3">
+          <nav aria-label="Company" className="flex flex-col gap-3">
             <h4 className="font-semibold text-white text-sm">Company</h4>
-            <div className="space-y-2 text-sm">
-              <Link to="/about" className="text-gray-400 hover:text-accent">About</Link>
-              <Link to="/blog" className="text-gray-400 hover:text-accent">Blog</Link>
-              <Link to="/contact" className="text-gray-400 hover:text-accent">Contact</Link>
+            <div className="flex flex-col space-y-2 text-sm">
+              <Link to="/about" className="text-gray-400 hover:text-accent transition-colors">About Unilancer</Link>
+              <Link to="/blog" className="text-gray-400 hover:text-accent transition-colors">Blog</Link>
+              <Link to="/contact" className="text-gray-400 hover:text-accent transition-colors">Contact Us</Link>
             </div>
-          </div>
+          </nav>
 
           {/* Legal */}
-          <div className="flex flex-col gap-3">
+          <nav aria-label="Legal" className="flex flex-col gap-3">
             <h4 className="font-semibold text-white text-sm">Legal</h4>
-            <div className="space-y-2 text-sm">
-              <Link to="/privacy" className="text-gray-400 hover:text-accent">Privacy Policy</Link>
-              <Link to="/terms" className="text-gray-400 hover:text-accent">Terms of Service</Link>
+            <div className="flex flex-col space-y-2 text-sm">
+              <Link to="/privacy" className="text-gray-400 hover:text-accent transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="text-gray-400 hover:text-accent transition-colors">Terms of Service</Link>
             </div>
-          </div>
+          </nav>
 
         </div>
 
@@ -67,9 +67,9 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
             <p>© {new Date().getFullYear()} Unilancer. All rights reserved.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-accent">Twitter</a>
-              <a href="#" className="hover:text-accent">LinkedIn</a>
-              <a href="#" className="hover:text-accent">GitHub</a>
+              <a href="#" aria-label="Unilancer on Twitter" className="hover:text-accent transition-colors">Twitter</a>
+              <a href="#" aria-label="Unilancer on LinkedIn" className="hover:text-accent transition-colors">LinkedIn</a>
+              <a href="#" aria-label="Unilancer on GitHub" className="hover:text-accent transition-colors">GitHub</a>
             </div>
           </div>
         </div>

@@ -435,6 +435,8 @@ import {
   addGigReview,
   markReviewHelpful,
 } from "../../api/gigsApi";
+import SEO from "../SEO";
+import Breadcrumbs from "../Breadcrumbs";
 
 const GigDetailPage = () => {
   const { id } = useParams();
@@ -640,7 +642,26 @@ const GigDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-5xl mx-auto px-4 py-6 grid lg:grid-cols-[2fr,1fr] gap-6">
+      <SEO
+        title={gig.title}
+        description={gig.description?.slice(0, 160) || `${gig.title} — Freelance gig on Unilancer`}
+        path={`/gigs/${id}`}
+        image={gig.images?.[0] || undefined}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Gigs", path: "/gigs" },
+          { name: gig.title, path: `/gigs/${id}` },
+        ]}
+      />
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <Breadcrumbs
+          items={[
+            { label: "Home", to: "/" },
+            { label: "Gigs", to: "/gigs" },
+            { label: gig.title },
+          ]}
+        />
+        <div className="grid lg:grid-cols-[2fr,1fr] gap-6">
         {/* LEFT: Main content */}
         <div>
           <div className="flex items-center justify-between gap-3 mb-2">
@@ -1075,6 +1096,7 @@ const GigDetailPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
