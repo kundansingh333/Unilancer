@@ -1,4 +1,3 @@
-// src/pages/orders/CreateOrderPage.jsx
 import { useEffect, useState } from "react";
 import {
   useLocation,
@@ -8,6 +7,18 @@ import {
 } from "react-router-dom";
 import api from "../../api/client";
 import useAuthStore from "../../store/authStore";
+import { 
+  Package, 
+  CreditCard, 
+  AlignLeft, 
+  FileText, 
+  Hash, 
+  ChevronLeft, 
+  Star, 
+  Clock, 
+  AlertCircle 
+} from "lucide-react";
+import SEO from "../../components/SEO";
 
 const packageTypes = ["Basic", "Standard", "Premium", "Custom"];
 const paymentMethods = ["UPI", "Bank Transfer", "PayPal", "Cash"];
@@ -51,8 +62,7 @@ const CreateOrderPage = () => {
         setGig(res.data.gig || res.data);
       } catch (err) {
         console.error("Failed to load gig:", err);
-        const message =
-          err?.response?.data?.error || "Failed to load gig details.";
+        const message = err?.response?.data?.error || "Failed to load gig details.";
         setError(message);
       } finally {
         setLoadingGig(false);
@@ -60,14 +70,17 @@ const CreateOrderPage = () => {
     };
 
     fetchGig();
+    window.scrollTo(0, 0);
   }, [gigId]);
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-slate-300 text-sm">
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center">
+        <Package className="w-16 h-16 text-indigo-500/50 mb-4" />
+        <h2 className="text-xl font-bold text-white mb-2">Authentication Required</h2>
+        <div className="text-slate-400 text-sm">
           Please{" "}
-          <Link to="/login" className="text-blue-400 underline">
+          <Link to="/login" className="text-indigo-400 font-medium hover:underline">
             login
           </Link>{" "}
           to create an order.
@@ -108,10 +121,7 @@ const CreateOrderPage = () => {
       navigate(`/orders/${createdOrder._id}`);
     } catch (err) {
       console.error("Create order failed:", err);
-      const message =
-        err?.response?.data?.error ||
-        err.message ||
-        "Failed to create order. Please try again.";
+      const message = err?.response?.data?.error || err.message || "Failed to create order. Please try again.";
       setError(message);
     } finally {
       setSubmitting(false);
@@ -119,177 +129,212 @@ const CreateOrderPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
-        <header className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold">Create order</h1>
-            <p className="text-sm text-slate-400">
-              Confirm details before placing your order with the freelancer.
-            </p>
-          </div>
-          {gig && (
-            <Link
-              to={`/gigs/${gig._id}`}
-              className="text-xs text-blue-400 hover:text-blue-300"
-            >
-              ← Back to gig
-            </Link>
-          )}
-        </header>
+    <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
+      <SEO title="Create Order" path="/orders/create" noIndex />
 
+      {/* HEADER BANNER */}
+      <div className="relative bg-slate-900 border-b border-slate-800 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900 to-slate-950" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+        
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <button onClick={() => gig ? navigate(`/gigs/${gig._id}`) : navigate(-1)} className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-4 w-fit">
+            <ChevronLeft className="w-4 h-4" /> Back to Gig
+          </button>
+          
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-lg shadow-indigo-500/10">
+              <Package className="w-7 h-7" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                Create Order
+              </h1>
+              <p className="text-sm text-slate-400">
+                Confirm details and place your order with the freelancer.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        
         {error && (
-          <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-            {error}
+          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <p className="text-sm font-medium">{error}</p>
           </div>
         )}
 
         {loadingGig ? (
-          <div className="text-slate-400 text-sm">Loading gig details...</div>
+          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+            <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            Loading gig details...
+          </div>
         ) : !gig ? (
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 text-sm text-slate-400">
-            Unable to load gig. Please go back and try again.
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center flex flex-col items-center">
+            <AlertCircle className="w-12 h-12 text-slate-500 mb-4" />
+            <h3 className="text-lg font-bold text-white mb-2">Gig Not Found</h3>
+            <p className="text-slate-400 mb-6">Unable to load gig details. It may have been deleted or removed.</p>
+            <button onClick={() => navigate('/gigs')} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-colors">
+              Browse Gigs
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
             {/* LEFT: FORM */}
-            <form
-              onSubmit={handleSubmit}
-              className="lg:col-span-2 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-5"
-            >
-              <div>
-                <p className="text-xs text-slate-400 mb-1">Gig</p>
-                <p className="text-sm font-medium text-slate-50">{gig.title}</p>
-                <p className="text-xs text-slate-500 line-clamp-2">
-                  {gig.description}
-                </p>
-              </div>
+            <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-6">
+              
+              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+                <h2 className="text-lg font-bold text-white mb-4 border-b border-slate-800 pb-2">Order Configuration</h2>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                      <Package className="w-4 h-4" /> Package Type
+                    </label>
+                    <select
+                      name="packageType"
+                      value={form.packageType}
+                      onChange={handleChange}
+                      className="w-full rounded-xl bg-slate-950 border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 appearance-none"
+                    >
+                      {packageTypes.map((pkg) => (
+                        <option key={pkg} value={pkg}>{pkg}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">
-                    Package type
-                  </label>
-                  <select
-                    name="packageType"
-                    value={form.packageType}
-                    onChange={handleChange}
-                    className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {packageTypes.map((pkg) => (
-                      <option key={pkg} value={pkg}>
-                        {pkg}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" /> Payment Method
+                    </label>
+                    <select
+                      name="paymentMethod"
+                      value={form.paymentMethod}
+                      onChange={handleChange}
+                      className="w-full rounded-xl bg-slate-950 border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 appearance-none"
+                    >
+                      {paymentMethods.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">
-                    Payment method
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <AlignLeft className="w-4 h-4" /> Work Description
                   </label>
-                  <select
-                    name="paymentMethod"
-                    value={form.paymentMethod}
+                  <textarea
+                    name="description"
+                    value={form.description}
                     onChange={handleChange}
-                    className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {paymentMethods.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ))}
-                  </select>
+                    rows={4}
+                    className="w-full rounded-xl bg-slate-950 border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none custom-scrollbar"
+                    placeholder="Explain exactly what you want the freelancer to deliver for this order..."
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <FileText className="w-4 h-4" /> Requirements & Notes
+                  </label>
+                  <textarea
+                    name="requirements"
+                    value={form.requirements}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full rounded-xl bg-slate-950 border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none custom-scrollbar"
+                    placeholder="Share access links, references, assets, or special instructions..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <Hash className="w-4 h-4" /> Transaction Reference <span className="text-slate-600 normal-case font-normal ml-1">(Optional)</span>
+                  </label>
+                  <input
+                    name="transactionId"
+                    value={form.transactionId}
+                    onChange={handleChange}
+                    className="w-full rounded-xl bg-slate-950 border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    placeholder="UPI ref no / bank txn id / PayPal id"
+                  />
                 </div>
               </div>
 
-              <div className="text-sm">
-                <label className="block text-xs text-slate-400 mb-1">
-                  Work description for this order
-                </label>
-                <textarea
-                  name="description"
-                  value={form.description}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Explain what exactly you want the freelancer to deliver for this order."
-                  required
-                />
-              </div>
-
-              <div className="text-sm">
-                <label className="block text-xs text-slate-400 mb-1">
-                  Requirements / notes for freelancer
-                </label>
-                <textarea
-                  name="requirements"
-                  value={form.requirements}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Share access links, references, assets, or any special instructions."
-                />
-              </div>
-
-              <div className="text-sm">
-                <label className="block text-xs text-slate-400 mb-1">
-                  Transaction / payment reference (optional)
-                </label>
-                <input
-                  name="transactionId"
-                  value={form.transactionId}
-                  onChange={handleChange}
-                  className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="UPI ref no / bank txn id / PayPal id"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-3 text-sm">
+              <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    gig ? navigate(`/gigs/${gig._id}`) : navigate(-1)
-                  }
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100"
+                  onClick={() => gig ? navigate(`/gigs/${gig._id}`) : navigate(-1)}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium transition-colors border border-slate-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-60"
+                  className="w-full sm:w-auto px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
                 >
-                  {submitting ? "Placing order..." : "Place order"}
+                  {submitting ? (
+                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Placing Order...</>
+                  ) : "Place Order"}
                 </button>
               </div>
             </form>
 
             {/* RIGHT: GIG SUMMARY CARD */}
-            <aside className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs space-y-3">
-              <h2 className="text-sm font-medium text-slate-200 mb-1">
-                Gig summary
-              </h2>
-              <p className="text-slate-300">{gig.title}</p>
-              <p className="text-slate-400">
-                Category: <span className="text-slate-200">{gig.category}</span>
-              </p>
-              <p className="text-slate-400">
-                Price:{" "}
-                <span className="text-slate-200">
-                  ₹{gig.price} • {gig.deliveryTime} days
-                </span>
-              </p>
-              <p className="text-slate-400">
-                Rating:{" "}
-                <span className="text-slate-200">
-                  {gig.averageRating ?? "—"} ({gig.totalReviews || 0} reviews)
-                </span>
-              </p>
-              <p className="text-slate-500">
-                The exact payment and delivery timeline will be visible in the
-                order once created.
-              </p>
+            <aside className="space-y-6">
+              <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-900/10 to-slate-900/60 p-6 overflow-hidden relative">
+                
+                <h2 className="text-sm font-bold text-indigo-400 uppercase tracking-wider mb-4 border-b border-indigo-500/20 pb-2">
+                  Gig Summary
+                </h2>
+                
+                <div className="space-y-4 relative z-10">
+                  <div>
+                    <h3 className="text-base font-bold text-white leading-snug mb-1">{gig.title}</h3>
+                    <span className="inline-block px-2.5 py-1 rounded-md bg-slate-950/50 border border-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      {gig.category}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 py-3 border-y border-slate-800/50">
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Price</p>
+                      <p className="text-lg font-bold text-emerald-400">
+                        {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(gig.price)}
+                      </p>
+                    </div>
+                    <div className="w-px h-8 bg-slate-800"></div>
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Delivery</p>
+                      <p className="text-sm font-bold text-slate-200 flex items-center gap-1.5 mt-1">
+                        <Clock className="w-4 h-4 text-indigo-400" /> {gig.deliveryTime} Days
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Freelancer Rating</p>
+                    <div className="flex items-center gap-1.5">
+                      <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                      <span className="text-sm font-bold text-white">{gig.averageRating ?? "New"}</span>
+                      <span className="text-xs text-slate-500">({gig.totalReviews || 0} reviews)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-800/50">
+                  <p className="text-xs text-slate-400 leading-relaxed italic">
+                    The exact payment details and delivery timeline will be finalized once the freelancer accepts the order.
+                  </p>
+                </div>
+              </div>
             </aside>
           </div>
         )}

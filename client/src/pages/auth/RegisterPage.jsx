@@ -1,15 +1,18 @@
-// src/pages/auth/RegisterPage.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/logo.webp";
 import SEO from "../../components/SEO";
+import { Sparkles, ArrowRight, UserPlus, GraduationCap, Briefcase, BookOpen } from "lucide-react";
 
-const ROLES = ["student", "alumni", "faculty"];
+const ROLES = [
+  { id: "student", label: "Student", icon: GraduationCap },
+  { id: "alumni", label: "Alumni", icon: Briefcase },
+  { id: "faculty", label: "Faculty", icon: BookOpen }
+];
 
 const RegisterPage = () => {
-  // ... (all the existing state and handlers remain unchanged)
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -30,7 +33,6 @@ const RegisterPage = () => {
     employeeId: "",
   });
 
-  const [successMsg, setSuccessMsg] = useState("");
   const { register, isLoading, error } = useAuthStore();
   const navigate = useNavigate();
 
@@ -41,7 +43,6 @@ const RegisterPage = () => {
 
   const handleRoleChange = (role) => {
     setForm((prev) => ({ ...prev, role }));
-    setSuccessMsg("");
   };
 
   const handleSubmit = async (e) => {
@@ -91,338 +92,317 @@ const RegisterPage = () => {
   const isFaculty = form.role === "faculty";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-50 selection:bg-blue-500/30 px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 flex">
       <SEO
         title="Sign Up"
         description="Create your free Unilancer account. Join as a student, alumni, or faculty member and start freelancing on campus."
         path="/register"
       />
-      {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-tr from-blue-500/10 to-purple-500/10 blur-3xl -z-10" />
       
-      <div className="w-full max-w-2xl">
-        {/* Card with Glassmorphism */}
-        <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <img
-              src={logo}
-              alt="Unilancer"
-              className="h-20 w-max object-contain group-hover:scale-105 transition-transform"
-            />
-          </div>
+      {/* LEFT: Branding/Imagery (Hidden on mobile) */}
+      <div className="hidden lg:flex w-[45%] relative bg-slate-900 overflow-hidden items-center justify-center sticky top-0 h-screen">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-slate-900 to-purple-900/40" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+        
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/30 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
 
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-50 text-center mb-2">
-            Create Account
+        <div className="relative z-10 p-12 max-w-xl text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium mb-8">
+            <Sparkles className="w-4 h-4" /> Join the Community
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+            Start Your Journey with Unilancer
           </h1>
-          <p className="text-sm text-slate-400 text-center mb-8 leading-relaxed">
-            Join as a student, alumni, or faculty member
+          <p className="text-lg text-slate-300">
+            Create an account to discover gigs, apply for jobs, and connect with your campus network.
           </p>
+        </div>
+      </div>
 
-          {/* Role Selector */}
-          <div className="flex gap-3 mb-8">
-            {ROLES.map((role) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => handleRoleChange(role)}
-                className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm capitalize transition-all border ${
-                  form.role === role
-                    ? "bg-slate-800 text-blue-400 border-blue-500 shadow-lg shadow-blue-500/10"
-                    : "bg-transparent border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-blue-400 hover:border-slate-600"
-                }`}
-              >
-                {role}
-              </button>
-            ))}
+      {/* RIGHT: Form */}
+      <div className="w-full lg:w-[55%] flex justify-center p-6 sm:p-12 relative min-h-screen overflow-y-auto">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-indigo-500/5 to-purple-500/5 blur-3xl -z-10 lg:hidden" />
+
+        <div className="w-full max-w-xl py-8">
+          <div className="flex justify-center mb-8 lg:hidden">
+            <img src={logo} alt="Unilancer" className="h-16 w-auto object-contain" />
           </div>
 
+          <div className="mb-10 text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-white tracking-tight mb-2">Create Account</h2>
+            <p className="text-slate-400">Join as a student, alumni, or faculty member.</p>
+          </div>
 
-          {successMsg && (
-            <div className="mb-6 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-emerald-400 text-sm font-semibold">{successMsg}</p>
+          {error && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center gap-3">
+              <span className="text-xl">⚠️</span>
+              <p className="text-red-400 text-sm font-medium">{error}</p>
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-5"
-          >
-            {/* COMMON */}
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                placeholder="John Doe"
-                value={form.name}
-                onChange={handleChange}
-                required
-                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                placeholder="your@college.edu"
-                value={form.email}
-                onChange={handleChange}
-                required
-                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                required
-                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-              />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                College/University
-              </label>
-              <input
-                type="text"
-                name="college"
-                placeholder="Your college name"
-                value={form.college}
-                onChange={handleChange}
-                required
-                className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-              />
-            </div>
-
-            {/* STUDENT */}
-            {isStudent && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Branch
-                  </label>
-                  <input
-                    type="text"
-                    name="branch"
-                    placeholder="CSE, ECE, etc."
-                    value={form.branch}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Year
-                  </label>
-                  <input
-                    type="number"
-                    name="year"
-                    placeholder="1-5"
-                    min="1"
-                    max="5"
-                    value={form.year}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Section
-                  </label>
-                  <input
-                    type="text"
-                    name="section"
-                    placeholder="A, B, C, etc."
-                    value={form.section}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Roll Number
-                  </label>
-                  <input
-                    type="text"
-                    name="rollNumber"
-                    placeholder="Your roll number"
-                    value={form.rollNumber}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* ALUMNI */}
-            {isAlumni && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    placeholder="Your company name"
-                    value={form.company}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Job Title
-                  </label>
-                  <input
-                    type="text"
-                    name="jobTitle"
-                    placeholder="Your position"
-                    value={form.jobTitle}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Year of Passing
-                  </label>
-                  <input
-                    type="number"
-                    name="yearOfPassing"
-                    placeholder="2020"
-                    value={form.yearOfPassing}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Domain
-                  </label>
-                  <input
-                    type="text"
-                    name="domain"
-                    placeholder="Software, Design, etc."
-                    value={form.domain}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    LinkedIn (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    name="linkedIn"
-                    placeholder="linkedin.com/in/yourprofile"
-                    value={form.linkedIn}
-                    onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* FACULTY */}
-            {isFaculty && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Department
-                  </label>
-                  <input
-                    type="text"
-                    name="department"
-                    placeholder="Computer Science, etc."
-                    value={form.department}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Designation
-                  </label>
-                  <input
-                    type="text"
-                    name="designation"
-                    placeholder="Professor, Lecturer, etc."
-                    value={form.designation}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Employee ID
-                  </label>
-                  <input
-                    type="text"
-                    name="employeeId"
-                    placeholder="Your employee ID"
-                    value={form.employeeId}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-slate-900/50 border border-slate-800 text-slate-100 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block p-2.5 placeholder-slate-600 transition-all outline-none"
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="sm:col-span-2 mt-6">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </button>
-            </div>
-          </form>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center gap-3">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">OR</span>
-            <div className="flex-1 h-px bg-slate-800" />
+          {/* Role Selector */}
+          <div className="grid grid-cols-3 gap-3 mb-8">
+            {ROLES.map((roleObj) => {
+              const Icon = roleObj.icon;
+              const isSelected = form.role === roleObj.id;
+              return (
+                <button
+                  key={roleObj.id}
+                  type="button"
+                  onClick={() => handleRoleChange(roleObj.id)}
+                  className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border transition-all duration-200 ${
+                    isSelected
+                      ? "bg-indigo-500/10 border-indigo-500 text-indigo-400 shadow-lg shadow-indigo-500/10 scale-[1.02]"
+                      : "bg-slate-900/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:border-slate-600"
+                  }`}
+                >
+                  <Icon className={`w-6 h-6 ${isSelected ? 'text-indigo-400' : 'text-slate-500'}`} />
+                  <span className="text-sm font-medium">{roleObj.label}</span>
+                </button>
+              );
+            })}
           </div>
 
-          <p className="text-center text-xs text-slate-500">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-blue-400 font-medium hover:text-blue-300 transition-colors"
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid sm:grid-cols-2 gap-5">
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Email Address *</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="your@college.edu"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Password *</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">College/University *</label>
+                <input
+                  type="text"
+                  name="college"
+                  value={form.college}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="Your college name"
+                />
+              </div>
+
+              {/* STUDENT FIELDS */}
+              {isStudent && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Branch *</label>
+                    <input
+                      type="text"
+                      name="branch"
+                      value={form.branch}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="CSE, ECE, etc."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Year *</label>
+                    <input
+                      type="number"
+                      name="year"
+                      min="1" max="5"
+                      value={form.year}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="1-5"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Section *</label>
+                    <input
+                      type="text"
+                      name="section"
+                      value={form.section}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="A, B, C"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Roll Number *</label>
+                    <input
+                      type="text"
+                      name="rollNumber"
+                      value={form.rollNumber}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Your roll number"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* ALUMNI FIELDS */}
+              {isAlumni && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Company *</label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={form.company}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Current company"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Job Title *</label>
+                    <input
+                      type="text"
+                      name="jobTitle"
+                      value={form.jobTitle}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Your position"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Year of Passing *</label>
+                    <input
+                      type="number"
+                      name="yearOfPassing"
+                      value={form.yearOfPassing}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="e.g. 2020"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Domain *</label>
+                    <input
+                      type="text"
+                      name="domain"
+                      value={form.domain}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Software, Design, etc."
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">LinkedIn URL</label>
+                    <input
+                      type="url"
+                      name="linkedIn"
+                      value={form.linkedIn}
+                      onChange={handleChange}
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="https://linkedin.com/in/..."
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* FACULTY FIELDS */}
+              {isFaculty && (
+                <>
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Department *</label>
+                    <input
+                      type="text"
+                      name="department"
+                      value={form.department}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Computer Science, etc."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Designation *</label>
+                    <input
+                      type="text"
+                      name="designation"
+                      value={form.designation}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Professor, Lecturer, etc."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Employee ID *</label>
+                    <input
+                      type="text"
+                      name="employeeId"
+                      value={form.employeeId}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Your employee ID"
+                    />
+                  </div>
+                </>
+              )}
+
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-indigo-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-8"
             >
-              Login
-            </Link>
-          </p>
+              {isLoading ? "Creating Account..." : "Create Account"}
+              {!isLoading && <UserPlus className="w-4 h-4" />}
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-slate-800 text-center">
+            <p className="text-sm text-slate-400">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors inline-flex items-center gap-1"
+              >
+                Sign in <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

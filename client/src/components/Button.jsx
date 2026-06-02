@@ -2,8 +2,8 @@
 import React from "react";
 
 /**
- * Strict Button Component - Dark Tech Theme
- * All variants use inline Tailwind utilities with slate/blue color scale
+ * Premium Button Component - Glassmorphism & Gradient Tech Theme
+ * All variants use inline Tailwind utilities with slate/indigo color scale
  */
 const Button = ({
   variant = "primary",
@@ -15,30 +15,30 @@ const Button = ({
 }) => {
   // Base styles applied to ALL buttons
   const baseStyles =
-    "rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    "font-bold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
   // Size variants
   const sizeStyles = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2.5 text-base",
-    lg: "px-6 py-3 text-lg",
-    xl: "px-8 py-4 text-xl",
+    sm: "px-4 py-2 text-sm rounded-lg",
+    md: "px-6 py-3 text-sm rounded-xl",
+    lg: "px-8 py-3.5 text-base rounded-xl",
+    xl: "px-10 py-4 text-lg rounded-2xl",
   };
 
-  // Color variants - Dark Tech Theme (slate/blue)
+  // Color variants - Premium Dark Theme (slate/indigo/emerald)
   const variantStyles = {
     primary:
-      "bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-lg shadow-blue-600/20 active:scale-95 active:shadow-blue-600/10",
+      "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 active:scale-[0.98]",
     secondary:
-      "bg-transparent border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600",
+      "bg-slate-800/80 backdrop-blur-sm border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 hover:border-slate-600 shadow-sm active:scale-[0.98]",
     outline:
-      "border-2 border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white hover:shadow-lg hover:shadow-blue-500/20 active:scale-95",
+      "border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-500 hover:text-white shadow-sm hover:shadow-indigo-500/20 active:scale-[0.98]",
     light:
-      "bg-slate-800 text-slate-100 hover:bg-slate-700 hover:shadow-lg hover:shadow-slate-900/50 border border-slate-700 active:scale-95",
+      "bg-white text-slate-900 hover:bg-slate-200 shadow-lg shadow-white/10 active:scale-[0.98]",
     danger:
-      "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-500/20 active:scale-95",
+      "bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white shadow-sm hover:shadow-rose-500/20 active:scale-[0.98]",
     ghost:
-      "text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 active:scale-95 transition-colors",
+      "text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 active:scale-[0.98] transition-colors border border-transparent hover:border-indigo-500/20",
   };
 
   const finalClass = `${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`;

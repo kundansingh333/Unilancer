@@ -2,7 +2,7 @@
 import React from "react";
 
 /**
- * Strict Badge Component - Small but consistent
+ * Premium Badge Component
  */
 const Badge = ({
   variant = "primary",
@@ -11,18 +11,19 @@ const Badge = ({
   ...props
 }) => {
   const baseStyles =
-    "inline-block rounded-full font-medium text-xs px-3 py-1";
+    "inline-block rounded-md font-bold text-[10px] uppercase tracking-wider px-2.5 py-1 border";
 
   const variantStyles = {
-    primary: "bg-accent text-white",
-    secondary: "bg-indigo-100 text-dark",
-    success: "bg-success/15 text-success border border-success/30",
-    warning: "bg-warning/15 text-warning border border-warning/30",
-    danger: "bg-danger/15 text-danger border border-danger/30",
-    info: "bg-info/15 text-info border border-info/30",
+    primary: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+    secondary: "bg-slate-800 text-slate-300 border-slate-700",
+    success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    danger: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    info: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    purple: "bg-purple-500/10 text-purple-400 border-purple-500/20"
   };
 
-  const finalClass = `${baseStyles} ${variantStyles[variant]} ${className}`;
+  const finalClass = `${baseStyles} ${variantStyles[variant] || variantStyles.primary} ${className}`;
 
   return (
     <span className={finalClass} {...props}>
