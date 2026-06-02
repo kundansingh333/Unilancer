@@ -16,7 +16,9 @@ import {
   Clock,
   ArrowRight,
   TrendingUp,
-  LayoutDashboard
+  LayoutDashboard,
+  Users,
+  Loader2
 } from "lucide-react";
 import SEO from "../../components/SEO";
 
@@ -124,7 +126,7 @@ const DashboardPage = () => {
               </div>
               <div className="relative z-10">
                 {user.role === "student" && <StudentDashboard user={user} />}
-                {user.role === "alumni" && <AlumniDashboard user={user} />}
+                {(user.role === "alumni" || user.role === "alumini") && <AlumniDashboard user={user} />}
                 {user.role === "faculty" && <FacultyDashboard user={user} />}
                 {user.role === "admin" && <AdminDashboard user={user} stats={stats} isStatsLoading={isStatsLoading} />}
               </div>
@@ -307,7 +309,7 @@ const QuickActions = ({ user, navigate }) => {
         </div>
 
         {/* GIGS & JOBS SECTION */}
-        {(user.role === "student" || user.role === "alumni") && (
+        {(user.role === "student" || user.role === "alumni" || user.role === "alumini") && (
           <div className="space-y-2 mt-2">
             <p className="text-xs font-semibold text-blue-400 px-2 mt-2">Freelance & Careers</p>
             <button onClick={() => navigate("/gigs/create")} className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-lg shadow-blue-500/20 transition-colors">

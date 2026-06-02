@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import useAdminEventStore from "../../store/adminEventStore";
 
 const AdminEventApprovalPage = () => {
@@ -14,6 +15,35 @@ const AdminEventApprovalPage = () => {
 
   const [rejectReason, setRejectReason] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+  const handleApprove = async (id) => {
+    const res = await approve(id);
+    if (res.success) {
+      toast.success("Event approved successfully");
+    } else {
+      toast.error(res.error || "Failed to approve event");
+    }
+  };
+
+  const handleReject = async (id, reason) => {
+    const res = await reject(id, reason);
+    if (res.success) {
+      toast.success("Event rejected successfully");
+      setRejectReason("");
+      setSelectedId(null);
+    } else {
+      toast.error(res.error || "Failed to reject event");
+    }
+  };
+
+  const handleToggleFeature = async (id, isFeatured) => {
+    const res = await toggleFeature(id, isFeatured);
+    if (res.success) {
+      toast.success(isFeatured ? "Event featured" : "Event unfeatured");
+    } else {
+      toast.error(res.error || "Failed to feature event");
+    }
+  };
 
   useEffect(() => {
     loadPendingEvents();
@@ -52,7 +82,7 @@ const AdminEventApprovalPage = () => {
               {/* ACTION BUTTONS */}
               <div className="mt-4 flex gap-3">
                 <button
-                  onClick={() => approve(event._id)}
+                  onClick={() => handleApprove(event._id)}
                   className="px-4 py-2 bg-green-600 rounded-lg text-sm"
                 >
                   Approve
@@ -66,7 +96,7 @@ const AdminEventApprovalPage = () => {
                 </button>
 
                 <button
-                  onClick={() => toggleFeature(event._id, !event.isFeatured)}
+                  onClick={() => handleToggleFeature(event._id, !event.isFeatured)}
                   className="px-4 py-2 bg-blue-600 rounded-lg text-sm"
                 >
                   {event.isFeatured ? "Unfeature" : "Feature"}
@@ -92,11 +122,7 @@ const AdminEventApprovalPage = () => {
                     </button>
 
                     <button
-                      onClick={() => {
-                        reject(event._id, rejectReason);
-                        setRejectReason("");
-                        setSelectedId(null);
-                      }}
+                      onClick={() => handleReject(event._id, rejectReason)}
                       className="px-3 py-1 bg-rose-600 rounded"
                     >
                       Submit Rejection

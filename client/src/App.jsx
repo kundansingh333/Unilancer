@@ -139,7 +139,7 @@ const App = () => {
           <Route
             path="/gigs/create"
             element={
-              <ProtectedRoute allowedRoles={["student", "alumni"]}>
+              <ProtectedRoute allowedRoles={["student", "alumni", "alumini"]}>
                 <GigForm />
               </ProtectedRoute>
             }
@@ -226,7 +226,7 @@ const App = () => {
           <Route
             path="/jobs/create"
             element={
-              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+              <ProtectedRoute allowedRoles={["alumni", "alumini", "faculty", "admin"]}>
                 <CreateJobPage />
               </ProtectedRoute>
             }
@@ -235,7 +235,7 @@ const App = () => {
           <Route
             path="/jobs/my/posted"
             element={
-              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+              <ProtectedRoute allowedRoles={["alumni", "alumini", "faculty", "admin"]}>
                 <MyPostedJobsPage />
               </ProtectedRoute>
             }
@@ -244,7 +244,7 @@ const App = () => {
           <Route
             path="/jobs/:id/edit"
             element={
-              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+              <ProtectedRoute allowedRoles={["alumni", "alumini", "faculty", "admin"]}>
                 <EditJobPage />
               </ProtectedRoute>
             }
@@ -253,7 +253,7 @@ const App = () => {
           <Route
             path="/jobs/my/applications"
             element={
-              <ProtectedRoute allowedRoles={["student", "alumni"]}>
+              <ProtectedRoute allowedRoles={["student", "alumni", "alumini"]}>
                 <MyApplicationsPage />
               </ProtectedRoute>
             }
@@ -262,7 +262,7 @@ const App = () => {
           <Route
             path="/jobs/:id/applicants"
             element={
-              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+              <ProtectedRoute allowedRoles={["alumni", "alumini", "faculty", "admin"]}>
                 <JobApplicantsPage />
               </ProtectedRoute>
             }
@@ -279,7 +279,7 @@ const App = () => {
           <Route
             path="/jobs/my/posted"
             element={
-              <ProtectedRoute allowedRoles={["alumni", "faculty", "admin"]}>
+              <ProtectedRoute allowedRoles={["alumni", "alumini", "faculty", "admin"]}>
                 <MyPostedJobsPage />
               </ProtectedRoute>
             }
@@ -335,7 +335,7 @@ const App = () => {
           <Route
             path="/jobs/:jobId/apply"
             element={
-              <ProtectedRoute allowedRoles={["student", "alumni"]}>
+              <ProtectedRoute allowedRoles={["student", "alumni", "alumini"]}>
                 <ApplyJob />
               </ProtectedRoute>
             }
